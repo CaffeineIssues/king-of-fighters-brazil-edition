@@ -1,18 +1,8 @@
-; Mestre Thaynan WIP command file
+; Mestre Thaynan minimal WIP command file
 
 [Command]
 name = "x"
 command = x
-time = 1
-
-[Command]
-name = "y"
-command = y
-time = 1
-
-[Command]
-name = "a"
-command = a
 time = 1
 
 [Command]
@@ -47,15 +37,7 @@ time = 1
 
 [Statedef -1]
 
-[State -1, Air Attack]
-type = ChangeState
-value = 600
-triggerall = command = "x" || command = "y" || command = "a" || command = "b"
-triggerall = statetype = A
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, LP]
+[State -1, Light Punch]
 type = ChangeState
 value = 200
 triggerall = command = "x"
@@ -63,23 +45,7 @@ triggerall = statetype = S
 triggerall = ctrl
 trigger1 = 1
 
-[State -1, HP]
-type = ChangeState
-value = 210
-triggerall = command = "y"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, LK]
-type = ChangeState
-value = 230
-triggerall = command = "a"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, HK]
+[State -1, High Kick]
 type = ChangeState
 value = 240
 triggerall = command = "b"

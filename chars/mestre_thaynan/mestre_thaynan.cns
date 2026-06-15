@@ -72,10 +72,6 @@ down.friction.threshold = .05
 
 [Quotes]
 victory1 = "Form first. Power follows."
-victory2 = "The tiger waits before it strikes."
-
-; ---------------------------------------------------------------------------
-; Basic normals
 
 [Statedef 200]
 type = S
@@ -87,9 +83,9 @@ sprpriority = 2
 
 [State 200, Hit]
 type = HitDef
-trigger1 = Time = 2
+trigger1 = Time = 4
 attr = S, NA
-damage = 24, 4
+damage = 35, 4
 animtype = Light
 guardflag = MA
 hitflag = MAF
@@ -111,74 +107,6 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
-[Statedef 210]
-type = S
-movetype = A
-physics = S
-anim = 210
-ctrl = 0
-sprpriority = 2
-
-[State 210, Hit]
-type = HitDef
-trigger1 = Time = 4
-attr = S, NA
-damage = 68, 8
-animtype = Hard
-guardflag = MA
-hitflag = MAF
-priority = 4, Hit
-pausetime = 10,10
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 12
-ground.hittime = 15
-ground.velocity = -4
-air.velocity = -3,-4
-
-[State 210, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 230]
-type = S
-movetype = A
-physics = S
-anim = 230
-ctrl = 0
-sprpriority = 2
-
-[State 230, Hit]
-type = HitDef
-trigger1 = Time = 3
-attr = S, NA
-damage = 28, 4
-animtype = Light
-guardflag = MA
-hitflag = MAF
-priority = 3, Hit
-pausetime = 6,6
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = Low
-ground.slidetime = 8
-ground.hittime = 11
-ground.velocity = -2
-air.velocity = -2,-3
-
-[State 230, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
 [Statedef 240]
 type = S
 movetype = A
@@ -191,7 +119,7 @@ sprpriority = 2
 type = HitDef
 trigger1 = Time = 5
 attr = S, NA
-damage = 76, 8
+damage = 78, 8
 animtype = Hard
 guardflag = MA
 hitflag = MAF
@@ -212,42 +140,3 @@ type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
-
-; ---------------------------------------------------------------------------
-; Air attacks
-
-[Statedef 600]
-type = A
-movetype = A
-physics = A
-anim = 600
-ctrl = 0
-sprpriority = 2
-
-[State 600, Hit]
-type = HitDef
-trigger1 = Time = 2
-attr = A, NA
-damage = 42, 5
-animtype = Medium
-guardflag = HA
-hitflag = MAF
-priority = 3, Hit
-pausetime = 7,7
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 10
-ground.hittime = 13
-ground.velocity = -3
-air.velocity = -2,-4
-
-[State 600, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 50
-ctrl = 1
-
-
