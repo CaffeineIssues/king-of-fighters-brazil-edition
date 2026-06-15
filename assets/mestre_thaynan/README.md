@@ -14,8 +14,10 @@ testing.
 - `sprites/pcx/*.pcx` - indexed 256-color frames for future SFF import.
 - `sprites/mestre_thaynan_sprite_sheet_preview.png` - labeled contact sheet.
 - `sprites/palette_strip.png` - current working palette.
-- `reference/black_tiger_maestro_reference.jpg` - provided visual reference
+- `reference/black_tiger_maestro_reference_v2.png` - current visual reference
   sheet.
+- `reference/black_tiger_maestro_reference.jpg` - previous visual reference
+  sheet kept for comparison.
 - `tools/generate_mestre_thaynan_sprites.py` - reproducible reference-sheet
   extractor.
 
@@ -28,9 +30,9 @@ The extracted pass includes:
 - Walk cycle: `walk_00` through `walk_03`
 - Low stance / crouch: `crouch`
 - Jump neutral: `jump_neutral`
-- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk`
-  (`black_tiger_palm` is also mapped to the heavy punch SFF slot for a stronger
-  current test attack)
+- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk` from the
+  updated rapid-punch and crane-kick rows (`black_tiger_palm` is also mapped to
+  the heavy punch SFF slot for a stronger current test attack).
 - Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
   `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
   `tiger_roar_projectile`

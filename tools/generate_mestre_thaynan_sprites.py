@@ -2,7 +2,7 @@
 """Extract Mestre Thaynan source sprites from the provided reference sheet.
 
 The input sheet is stored at:
-  assets/mestre_thaynan/reference/black_tiger_maestro_reference.jpg
+  assets/mestre_thaynan/reference/black_tiger_maestro_reference_v2.png
 
 The output files are source-art frames for review and MUGEN / IKEMEN import
 prep. They are not a finished SFF: a pixel artist should still clean the JPEG
@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_reference.jpg"
+REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_reference_v2.png"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -39,44 +39,44 @@ class CropSpec:
     keep_largest: bool = True
 
 
-# Coordinates are measured against the downloaded 574x1024 reference sheet.
+# Coordinates are measured against the downloaded 768x1370 v2 reference sheet.
 # Crops intentionally include a small margin so the edge flood-fill can remove
 # the light-blue cell background without eating into outlines.
 FRAMES = [
     # Full-body stance / movement row.
-    CropSpec("idle_00", "Idle 0", (12, 209, 81, 326)),
-    CropSpec("idle_01", "Idle 1", (83, 209, 149, 326)),
-    CropSpec("idle_02", "Idle 2", (153, 209, 219, 326)),
-    CropSpec("idle_03", "Idle 3", (222, 209, 287, 326)),
-    CropSpec("walk_00", "Walk 0", (12, 209, 81, 326)),
-    CropSpec("walk_01", "Walk 1", (83, 209, 149, 326)),
-    CropSpec("walk_02", "Walk 2", (153, 209, 219, 326)),
-    CropSpec("walk_03", "Walk 3", (222, 209, 287, 326)),
-    CropSpec("sidewalk_step", "Sidewalk Step", (356, 209, 424, 326)),
-    CropSpec("jacket_alt_idle", "Alt Idle", (496, 209, 562, 326)),
-    # Kung fu form attacks.
-    CropSpec("prayer_guard", "Prayer Guard", (13, 384, 82, 500)),
-    CropSpec("stand_lp", "LP Claw", (83, 384, 151, 500)),
-    CropSpec("stand_hp", "HP Tiger Claw", (153, 384, 221, 500)),
-    CropSpec("black_tiger_palm", "Black Tiger Palm", (222, 384, 289, 500), keep_largest=False),
-    CropSpec("jump_neutral", "Jump", (291, 384, 356, 500), 0.88),
-    CropSpec("crane_anti_air", "Crane Kick", (358, 384, 425, 500), 0.88, keep_largest=False),
-    CropSpec("stand_hk", "HK Side Kick", (426, 384, 494, 500), 0.88),
-    CropSpec("stand_lk", "LK Stance", (496, 384, 562, 500)),
+    CropSpec("idle_00", "Idle 0", (16, 280, 108, 436)),
+    CropSpec("idle_01", "Idle 1", (111, 280, 199, 436)),
+    CropSpec("idle_02", "Idle 2", (205, 280, 293, 436)),
+    CropSpec("idle_03", "Idle 3", (297, 280, 384, 436)),
+    CropSpec("walk_00", "Walk 0", (16, 280, 108, 436)),
+    CropSpec("walk_01", "Walk 1", (111, 280, 199, 436)),
+    CropSpec("walk_02", "Walk 2", (205, 280, 293, 436)),
+    CropSpec("walk_03", "Walk 3", (297, 280, 384, 436)),
+    CropSpec("sidewalk_step", "Sidewalk Step", (476, 280, 567, 436)),
+    CropSpec("jacket_alt_idle", "Alt Idle", (664, 280, 752, 436)),
+    # Punching Combos & Techniques / new moves row.
+    CropSpec("prayer_guard", "Prayer Guard", (17, 514, 110, 669)),
+    CropSpec("stand_lp", "Rapid Punch 1", (111, 514, 202, 669), keep_largest=False),
+    CropSpec("stand_hp", "Rapid Punch 2", (205, 514, 296, 669), keep_largest=False),
+    CropSpec("black_tiger_palm", "Rapid Punch 3", (297, 514, 387, 669), keep_largest=False),
+    CropSpec("jump_neutral", "Jump", (389, 514, 476, 669), 0.88),
+    CropSpec("crane_anti_air", "Crane Kick", (479, 514, 569, 669), 0.88, keep_largest=False),
+    CropSpec("stand_hk", "HK Crane Kick", (570, 514, 661, 669), 0.88, keep_largest=False),
+    CropSpec("stand_lk", "LK Stance", (664, 514, 752, 669)),
     # Special move row.
-    CropSpec("crouch", "Low Stance", (15, 535, 119, 653)),
-    CropSpec("tiger_roar_start", "Tiger Roar Start", (120, 535, 223, 653), keep_largest=False),
-    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (224, 535, 327, 653), keep_largest=False),
-    CropSpec("prayer_counter", "Tiger Roar", (328, 535, 431, 653), keep_largest=False),
-    CropSpec("tiger_roar_projectile", "Tiger Projectile", (432, 535, 561, 653), keep_largest=False),
+    CropSpec("crouch", "Low Stance", (20, 716, 159, 874)),
+    CropSpec("tiger_roar_start", "Tiger Roar Start", (161, 716, 298, 874), keep_largest=False),
+    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (300, 716, 438, 874), keep_largest=False),
+    CropSpec("prayer_counter", "Tiger Roar", (439, 716, 577, 874), keep_largest=False),
+    CropSpec("tiger_roar_projectile", "Tiger Projectile", (578, 716, 751, 874), keep_largest=False),
     # Hurt / KO row.
-    CropSpec("hit_high", "Hit High", (66, 687, 173, 755), 0.90),
-    CropSpec("hit_recoil", "Hit Recoil", (174, 687, 280, 755), 0.90),
-    CropSpec("knockdown", "Knockdown", (281, 687, 410, 755), 0.94),
-    CropSpec("ko", "KO", (411, 687, 509, 755), 0.94),
+    CropSpec("hit_high", "Hit High", (88, 919, 231, 1010), 0.90),
+    CropSpec("hit_recoil", "Hit Recoil", (233, 919, 375, 1010), 0.90),
+    CropSpec("knockdown", "Knockdown", (376, 919, 549, 1010), 0.94),
+    CropSpec("ko", "KO", (550, 919, 681, 1010), 0.94),
     # Portrait crops for select/victory references.
-    CropSpec("portrait_neutral", "Portrait", (27, 790, 273, 1000), 0.96, keep_largest=False),
-    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (302, 790, 549, 1000), 0.96, keep_largest=False),
+    CropSpec("portrait_neutral", "Portrait", (36, 1057, 365, 1338), 0.96, keep_largest=False),
+    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (404, 1057, 735, 1338), 0.96, keep_largest=False),
 ]
 
 
@@ -93,8 +93,8 @@ def likely_sheet_background(rgb: tuple[int, int, int]) -> bool:
 
 def likely_fringe(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
-    is_cyan_panel = b > 135 and g > 125 and r > 75 and b >= r + 14
-    is_white_jpeg_edge = r > 214 and g > 214 and b > 214
+    is_cyan_panel = b > 128 and g > 118 and r > 68 and b >= r + 10
+    is_white_jpeg_edge = r > 204 and g > 204 and b > 204
     return is_cyan_panel or is_white_jpeg_edge
 
 
