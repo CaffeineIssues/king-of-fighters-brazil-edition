@@ -17,6 +17,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 PCX_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites" / "pcx"
 CHAR_DIR = ROOT / "chars" / "mestre_thaynan"
+GAMEPLAY_AXIS_X = 90
+GAMEPLAY_AXIS_Y = 118
 
 
 @dataclass(frozen=True)
@@ -446,7 +448,7 @@ def write_sprmake2_def(path: Path) -> None:
         "sprite.compress.24 = none",
         "sprite.decompressonload = 0",
         "sprite.detectduplicates = 0",
-        "sprite.autocrop = 1",
+        "sprite.autocrop = 0",
         "pal.detectduplicates = 1",
         "pal.discardduplicates = 1",
         "pal.reverseact = 0",
@@ -463,8 +465,12 @@ def write_sprmake2_def(path: Path) -> None:
     for spec in SPRITES:
         pcx_path = PCX_DIR / f"{spec.frame}.pcx"
         width, height = pcx_dimensions(pcx_path)
-        x_axis = width // 2
-        y_axis = max(1, min(height - 1, round(height * spec.ground_ratio)))
+        if spec.frame.startswith("portrait_"):
+            x_axis = width // 2
+            y_axis = max(1, min(height - 1, round(height * spec.ground_ratio)))
+        else:
+            x_axis = GAMEPLAY_AXIS_X
+            y_axis = GAMEPLAY_AXIS_Y
         lines.append(f"{spec.group}, {spec.image}, {spec.frame}.pcx, {x_axis}, {y_axis}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

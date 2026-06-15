@@ -29,6 +29,10 @@ GROUND = (96, 91, 78, 255)
 PCX_TRANSPARENT_RGB = (0, 255, 0)
 PCX_ALPHA_CUTOFF = 220
 GAMEPLAY_TARGET_HEIGHT = 82
+GAMEPLAY_CANVAS_W = 180
+GAMEPLAY_CANVAS_H = 128
+GAMEPLAY_AXIS_X = 90
+GAMEPLAY_AXIS_Y = 118
 
 
 @dataclass(frozen=True)
@@ -58,10 +62,10 @@ FRAMES = [
     FrameSpec("stand_lp_01", "Light Punch 1", (266, 552, 502, 765)),
     FrameSpec("stand_lp_02", "Light Punch 2", (522, 552, 756, 765)),
     FrameSpec("stand_lp_03", "Light Punch 3", (778, 552, 1008, 765)),
-    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.88, keep_largest=True),
-    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.88, keep_largest=True),
-    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.88, keep_largest=True),
-    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.88, keep_largest=True),
+    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.98, keep_largest=True),
+    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.98, keep_largest=True),
+    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.98, keep_largest=True),
+    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.98, keep_largest=True),
     FrameSpec("stand_hk_04", "High Kick 4", (828, 812, 1008, 1020), keep_largest=True),
     FrameSpec("portrait_neutral", "Portrait Source", (18, 40, 145, 252), normalize=False),
 ]
@@ -184,6 +188,19 @@ def pad(img: Image.Image, margin: int = 2) -> Image.Image:
     return padded
 
 
+def place_on_gameplay_canvas(img: Image.Image, spec: FrameSpec) -> Image.Image:
+    if spec.name.startswith("portrait_"):
+        return pad(img)
+
+    canvas = Image.new("RGBA", (GAMEPLAY_CANVAS_W, GAMEPLAY_CANVAS_H), TRANSPARENT)
+    axis_x = img.width // 2
+    axis_y = round(img.height * spec.ground_ratio)
+    paste_x = GAMEPLAY_AXIS_X - axis_x
+    paste_y = GAMEPLAY_AXIS_Y - axis_y
+    canvas.alpha_composite(img, (paste_x, paste_y))
+    return canvas
+
+
 def make_frame(sheet: Image.Image, spec: FrameSpec) -> Image.Image:
     crop = sheet.crop(spec.box)
     cleaned = neutralize_green_spill(remove_edge_green(crop))
@@ -191,7 +208,8 @@ def make_frame(sheet: Image.Image, spec: FrameSpec) -> Image.Image:
         cleaned = keep_largest_component(cleaned)
     trimmed = trim_transparent(cleaned)
     normalized = normalize_height(trimmed, spec)
-    return pad(neutralize_green_spill(trim_transparent(normalized)))
+    final = neutralize_green_spill(trim_transparent(normalized))
+    return place_on_gameplay_canvas(final, spec)
 
 
 def make_portrait_small(portrait: Image.Image) -> Image.Image:
