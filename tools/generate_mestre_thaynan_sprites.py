@@ -43,6 +43,7 @@ class FrameSpec:
     ground_ratio: float = 0.94
     normalize: bool = True
     keep_largest: bool = False
+    x_offset: int = 0
 
 
 # Explicit one-by-one frame crops from the 1024x1024 restart sheet.
@@ -50,8 +51,8 @@ class FrameSpec:
 FRAMES = [
     FrameSpec("idle_00", "Idle 0", (18, 40, 145, 252)),
     FrameSpec("idle_01", "Idle 1", (214, 40, 337, 252)),
-    FrameSpec("idle_02", "Idle 2", (412, 40, 527, 252)),
-    FrameSpec("idle_03", "Idle 3", (616, 40, 735, 252)),
+    FrameSpec("idle_02", "Idle 2", (400, 40, 540, 252), x_offset=12, keep_largest=True),
+    FrameSpec("idle_03", "Idle 3", (604, 40, 748, 252), x_offset=10, keep_largest=True),
     FrameSpec("walk_00", "Walk 0", (16, 294, 163, 508)),
     FrameSpec("walk_01", "Walk 1", (178, 294, 320, 508)),
     FrameSpec("walk_02", "Walk 2", (346, 294, 500, 508)),
@@ -195,7 +196,7 @@ def place_on_gameplay_canvas(img: Image.Image, spec: FrameSpec) -> Image.Image:
     canvas = Image.new("RGBA", (GAMEPLAY_CANVAS_W, GAMEPLAY_CANVAS_H), TRANSPARENT)
     axis_x = img.width // 2
     axis_y = round(img.height * spec.ground_ratio)
-    paste_x = GAMEPLAY_AXIS_X - axis_x
+    paste_x = GAMEPLAY_AXIS_X - axis_x + spec.x_offset
     paste_y = GAMEPLAY_AXIS_Y - axis_y
     canvas.alpha_composite(img, (paste_x, paste_y))
     return canvas
