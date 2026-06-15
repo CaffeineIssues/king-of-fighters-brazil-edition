@@ -44,48 +44,60 @@ class CropSpec:
 
 # Coordinates are measured against the 640x640 final reference sheet. Every
 # generated frame comes from this sheet; no older reference art is mixed in.
+def cell(
+    name: str,
+    title: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    ground_ratio: float = 0.94,
+    keep_largest: bool = True,
+    inset: int = 2,
+) -> CropSpec:
+    return CropSpec(name, title, (x + inset, y + inset, x + w - inset, y + h - inset), ground_ratio, keep_largest)
+
+
+def row(
+    prefix: str,
+    title: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    count: int,
+    ground_ratio: float = 0.94,
+    keep_largest: bool = True,
+) -> list[CropSpec]:
+    return [
+        cell(f"{prefix}_{idx:02d}", f"{title} {idx}", x + idx * w, y, w, h, ground_ratio, keep_largest)
+        for idx in range(count)
+    ]
+
+
 FRAMES = [
-    # Fighting idle row.
-    CropSpec("idle_00", "Idle 0", (0, 14, 80, 102)),
-    CropSpec("idle_01", "Idle 1", (80, 14, 160, 102)),
-    CropSpec("idle_02", "Idle 2", (160, 14, 240, 102)),
-    CropSpec("idle_03", "Idle 3", (240, 14, 320, 102)),
-    # Walk-forward row.
-    CropSpec("walk_00", "Walk 0", (320, 18, 384, 102)),
-    CropSpec("walk_01", "Walk 1", (384, 18, 448, 102)),
-    CropSpec("walk_02", "Walk 2", (448, 18, 512, 102)),
-    CropSpec("walk_03", "Walk 3", (512, 18, 576, 102)),
-    CropSpec("sidewalk_step", "Dash Placeholder", (0, 512, 64, 558), keep_largest=False),
-    CropSpec("jacket_alt_idle", "Win Placeholder", (462, 606, 522, 640)),
-    # Walk-backward row.
-    CropSpec("walk_back_00", "Walk Back 0", (0, 122, 64, 204)),
-    CropSpec("walk_back_01", "Walk Back 1", (64, 122, 128, 204)),
-    CropSpec("walk_back_02", "Walk Back 2", (128, 122, 192, 204)),
-    CropSpec("walk_back_03", "Walk Back 3", (192, 122, 256, 204)),
-    # Light punch row.
-    CropSpec("stand_lp", "Light Punch", (64, 330, 128, 394), keep_largest=False),
-    CropSpec("stand_hp", "Strong Punch", (384, 330, 448, 394), keep_largest=False),
-    CropSpec("stand_hp_02", "Strong Punch 2", (448, 330, 512, 394), keep_largest=False),
-    CropSpec("stand_hp_03", "Strong Punch 3", (512, 330, 576, 394), keep_largest=False),
-    # High kick row.
-    CropSpec("stand_lk", "Light Kick", (256, 432, 320, 498), 0.88, keep_largest=False),
-    CropSpec("stand_hk", "Strong Kick", (576, 432, 640, 498), 0.88, keep_largest=False),
-    CropSpec("stand_hk_01", "Strong Kick 2", (512, 432, 576, 498), 0.88, keep_largest=False),
-    # Jump, crouch, guard/block, dash, hurt, knockdown, and win.
-    CropSpec("jump_neutral", "Jump", (320, 122, 384, 204), 0.88),
-    CropSpec("crouch", "Crouch", (0, 226, 64, 306), 0.94),
-    CropSpec("prayer_guard", "Guard", (320, 226, 384, 306), 0.94),
-    CropSpec("hit_high", "Hurt 0", (320, 512, 384, 558), 0.90, keep_largest=False),
-    CropSpec("hit_recoil", "Hurt 1", (384, 512, 448, 558), 0.90, keep_largest=False),
-    CropSpec("knockdown", "Knockdown", (183, 606, 263, 640), 0.94),
-    CropSpec("ko", "Down", (263, 606, 343, 640), 0.94),
-    CropSpec("block_00", "Block 0", (0, 606, 46, 640), 0.94),
-    CropSpec("block_01", "Block 1", (46, 606, 92, 640), 0.94),
-    CropSpec("win_00", "Win 0", (462, 606, 522, 640), 0.96),
-    CropSpec("win_01", "Win 1", (522, 606, 581, 640), 0.96),
-    # Portrait crops derived from this same sheet.
-    CropSpec("portrait_neutral", "Portrait", (0, 14, 80, 102), 0.96, keep_largest=False),
-    CropSpec("portrait_tiger_roar", "Punch Portrait", (0, 328, 128, 410), 0.96, keep_largest=False),
+    *row("idle", "Idle", 0, 14, 80, 88, 4),
+    *row("walk", "Walk", 320, 14, 64, 88, 5),
+    *row("walk_back", "Walk Back", 0, 122, 64, 82, 5),
+    *row("jump", "Jump", 320, 122, 64, 82, 5, 0.88),
+    *row("crouch", "Crouch", 0, 224, 64, 83, 5),
+    *row("guard", "Guard", 320, 224, 64, 83, 5),
+    *row("stand_lp", "Light Punch", 0, 328, 64, 82, 5, keep_largest=False),
+    *row("stand_hp", "Strong Punch", 320, 328, 64, 82, 5, keep_largest=False),
+    *row("stand_lk", "Light Kick", 0, 430, 64, 82, 5, 0.88, keep_largest=False),
+    *row("stand_hk", "Strong Kick", 320, 430, 64, 82, 5, 0.88, keep_largest=False),
+    *row("dash", "Dash", 0, 512, 64, 72, 5, keep_largest=False),
+    *row("hit", "Hurt", 320, 512, 64, 72, 5, 0.90, keep_largest=False),
+    *[cell(f"block_{idx:02d}", f"Block {idx}", idx * 46, 584, 46, 56, 0.94) for idx in range(4)],
+    cell("knockdown_00", "Knockdown 0", 184, 584, 80, 56),
+    cell("knockdown_01", "Knockdown 1", 264, 584, 80, 56),
+    cell("knockdown_02", "Knockdown 2", 344, 584, 59, 56),
+    cell("knockdown_03", "Knockdown 3", 403, 584, 59, 56),
+    cell("win_00", "Win 0", 462, 584, 59, 56),
+    cell("win_01", "Win 1", 521, 584, 59, 56),
+    cell("win_02", "Win 2", 580, 584, 60, 56),
+    cell("portrait_neutral", "Portrait", 0, 14, 80, 88, 0.96, keep_largest=False),
+    cell("portrait_tiger_roar", "Punch Portrait", 0, 328, 128, 82, 0.96, keep_largest=False),
 ]
 
 
@@ -285,16 +297,23 @@ def make_frame(sheet: Image.Image, spec: CropSpec) -> Image.Image:
 
 def make_portrait_small(portrait: Image.Image) -> Image.Image:
     """Create the standard small select icon for sprite 9000,0."""
-    crop = portrait.crop((45, 0, 175, 130))
-    return crop.resize((25, 25), Image.Resampling.LANCZOS)
+    bbox = portrait.getbbox()
+    crop = portrait.crop(bbox) if bbox else portrait
+    # Favor head/torso for the tiny select icon instead of shrinking the whole body.
+    crop = crop.crop((0, 0, crop.width, max(1, int(crop.height * 0.58))))
+    crop.thumbnail((23, 23), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (25, 25), TRANSPARENT)
+    canvas.alpha_composite(crop, ((25 - crop.width) // 2, (25 - crop.height) // 2))
+    return canvas
 
 
 def make_portrait_big(portrait: Image.Image) -> Image.Image:
     """Create a controlled big select portrait for sprite 9000,1."""
     canvas = Image.new("RGBA", (120, 140), TRANSPARENT)
-    crop = portrait.crop((20, 0, 210, 210))
-    crop.thumbnail((120, 140), Image.Resampling.LANCZOS)
-    canvas.alpha_composite(crop, ((120 - crop.width) // 2, 140 - crop.height))
+    bbox = portrait.getbbox()
+    crop = portrait.crop(bbox) if bbox else portrait
+    crop.thumbnail((108, 132), Image.Resampling.LANCZOS)
+    canvas.alpha_composite(crop, ((120 - crop.width) // 2, 140 - crop.height - 4))
     return canvas
 
 
