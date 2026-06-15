@@ -18,12 +18,8 @@ Portrait frames keep their separate select-screen sizes.
 - `sprites/pcx/*.pcx` - indexed 256-color frames for future SFF import.
 - `sprites/mestre_thaynan_sprite_sheet_preview.png` - labeled contact sheet.
 - `sprites/palette_strip.png` - current working palette.
-- `reference/black_tiger_maestro_base_moves_v3.png` - current base movement and
-  normal attack visual reference sheet.
-- `reference/black_tiger_maestro_reference_v2.png` - fallback special move,
-  hurt, KO, and portrait reference sheet.
-- `reference/black_tiger_maestro_reference.jpg` - previous visual reference
-  sheet kept for comparison.
+- `reference/black_tiger_maestro_base_moves_v3.png` - current and only visual
+  reference sheet used by the extractor.
 - `tools/generate_mestre_thaynan_sprites.py` - reproducible reference-sheet
   extractor.
 
@@ -41,33 +37,33 @@ The extracted pass includes:
   punch SFF slot for a stronger current test attack).
 - Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
   `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
-  `tiger_roar_projectile`
-- Reactions and KO poses: `hit_high`, `hit_recoil`, `knockdown`, `ko`
-- Portrait references: `portrait_neutral`, `portrait_tiger_roar`
+  `tiger_roar_projectile` as temporary placeholders from the v3 sheet
+- Reactions and KO poses: `hit_high`, `hit_recoil`, `knockdown`, `ko` as
+  temporary placeholders from the v3 sheet
+- Portrait references: `portrait_neutral`, `portrait_tiger_roar` derived from
+  the v3 sheet
 - MUGEN portrait slots: `portrait_small` for sprite `9000,0` at 25x25 and
   `portrait_big` for sprite `9000,1` at 120x140
 - Costume/stance reference: `jacket_alt_idle`
 
 ## Visual Direction
 
-The base gameplay design now follows the cleaner sleeveless Black Tiger Maestro
-sheet, while special placeholders still use the earlier navy jacket sheet:
+The gameplay design follows the cleaner sleeveless Black Tiger Maestro sheet:
 
 - Long center-parted dark gray hair.
 - Rectangular glasses.
 - Lean older martial artist build.
-- Sleeveless black Black Tiger shirt for idle, walk, punch, and kick frames.
-- Navy track jacket with yellow sleeve stripes for temporary special/hurt/KO
-  placeholders.
+- Sleeveless black Black Tiger shirt for the current placeholder set.
 - Loose dark pants and black shoes.
 - Tiger Roar special effect identity.
 
 ## MUGEN Import Notes
 
 The PCX files use palette index 0 as the transparent key color. The extractor
-removes edge-connected sheet background, light JPEG fringe, and detached crop
-artifacts from normal character frames, then adds a one-pixel transparent safety
-pad so no visible white border remains at frame edges. They are
+removes edge-connected sheet background and detached crop artifacts from normal
+character frames. Green-screen spill is neutralized instead of aggressively
+deleted, preserving more character edge detail. A one-pixel transparent safety
+pad is then added so no visible border remains at frame edges. They are
 reference-derived source frames, not final cropped production frames.
 
 PCX export uses hard alpha thresholding before quantization so semi-transparent

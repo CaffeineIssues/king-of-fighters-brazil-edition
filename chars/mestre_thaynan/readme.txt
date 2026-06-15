@@ -18,6 +18,8 @@ What works:
 Known limitations:
 - This is not a final balanced character.
 - Requires mestre_thaynan.sff to be rebuilt with SprMake2 after sprite changes.
+  The SFF binary may be absent from source-control changes when it would contain
+  stale sprites from an older reference sheet.
 - Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.

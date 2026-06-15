@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Extract Mestre Thaynan source sprites from the provided reference sheet.
 
-The input sheets are stored at:
+The input sheet is stored at:
   assets/mestre_thaynan/reference/black_tiger_maestro_base_moves_v3.png
-  assets/mestre_thaynan/reference/black_tiger_maestro_reference_v2.png
 
 The output files are source-art frames for review and MUGEN / IKEMEN import
 prep. They are not a finished SFF: a pixel artist should still clean the JPEG
@@ -21,7 +20,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_base_moves_v3.png"
-SPECIAL_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_reference_v2.png"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -42,12 +40,11 @@ class CropSpec:
     box: tuple[int, int, int, int]
     ground_ratio: float = 0.94
     keep_largest: bool = True
-    source: str = "base"
 
 
-# Coordinates for base movement/normal frames are measured against the 1024x1024
-# v3 base sheet. Special/portrait fallback coordinates use the 768x1370 v2
-# sheet until new special art exists.
+# Coordinates are measured against the 1024x1024 v3 base sheet. Placeholder
+# specials, hurt states, and portraits intentionally reuse this same sheet until
+# dedicated art exists.
 FRAMES = [
     # Fighting idle row.
     CropSpec("idle_00", "Idle 0", (0, 35, 204, 256)),
@@ -67,24 +64,24 @@ FRAMES = [
     CropSpec("stand_hp", "Light Punch 2", (256, 548, 512, 769), keep_largest=False),
     CropSpec("black_tiger_palm", "Light Punch 3", (512, 548, 768, 769), keep_largest=False),
     # High kick row.
-    CropSpec("jump_neutral", "Kick Ready", (768, 804, 1024, 1024)),
+    CropSpec("jump_neutral", "Kick Placeholder", (0, 804, 192, 1024), 0.88, keep_largest=False),
     CropSpec("crane_anti_air", "High Kick 1", (0, 804, 192, 1024), 0.88, keep_largest=False),
     CropSpec("stand_hk", "High Kick 2", (192, 804, 384, 1024), 0.88, keep_largest=False),
-    CropSpec("stand_lk", "High Kick Recovery", (768, 804, 1024, 1024)),
-    # Special move row fallback from v2.
-    CropSpec("crouch", "Low Stance", (20, 716, 159, 874), source="special"),
-    CropSpec("tiger_roar_start", "Tiger Roar Start", (161, 716, 298, 874), keep_largest=False, source="special"),
-    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (300, 716, 438, 874), keep_largest=False, source="special"),
-    CropSpec("prayer_counter", "Tiger Roar", (439, 716, 577, 874), keep_largest=False, source="special"),
-    CropSpec("tiger_roar_projectile", "Tiger Projectile", (578, 716, 751, 874), keep_largest=False, source="special"),
-    # Hurt / KO row.
-    CropSpec("hit_high", "Hit High", (88, 919, 231, 1010), 0.90, source="special"),
-    CropSpec("hit_recoil", "Hit Recoil", (233, 919, 375, 1010), 0.90, source="special"),
-    CropSpec("knockdown", "Knockdown", (376, 919, 549, 1010), 0.94, source="special"),
-    CropSpec("ko", "KO", (550, 919, 681, 1010), 0.94, source="special"),
-    # Portrait crops for select/victory references.
-    CropSpec("portrait_neutral", "Portrait", (36, 1057, 365, 1338), 0.96, keep_largest=False, source="special"),
-    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (404, 1057, 735, 1338), 0.96, keep_largest=False, source="special"),
+    CropSpec("stand_lk", "Light Kick Placeholder", (855, 287, 1024, 512)),
+    # Temporary special placeholders from v3 until dedicated special art exists.
+    CropSpec("crouch", "Low Stance Placeholder", (0, 548, 256, 769)),
+    CropSpec("tiger_roar_start", "Special Placeholder 1", (0, 548, 256, 769), keep_largest=False),
+    CropSpec("tiger_roar_charge", "Special Placeholder 2", (256, 548, 512, 769), keep_largest=False),
+    CropSpec("prayer_counter", "Special Placeholder 3", (512, 548, 768, 769), keep_largest=False),
+    CropSpec("tiger_roar_projectile", "Special Placeholder 4", (512, 548, 768, 769), keep_largest=False),
+    # Temporary hurt / KO placeholders from v3.
+    CropSpec("hit_high", "Hit Placeholder", (0, 548, 256, 769)),
+    CropSpec("hit_recoil", "Recoil Placeholder", (0, 548, 256, 769)),
+    CropSpec("knockdown", "Knockdown Placeholder", (0, 287, 171, 512)),
+    CropSpec("ko", "KO Placeholder", (0, 35, 204, 256)),
+    # Portrait crops derived from v3 base art.
+    CropSpec("portrait_neutral", "Portrait", (0, 35, 204, 256), 0.96, keep_largest=False),
+    CropSpec("portrait_tiger_roar", "Punch Portrait", (0, 548, 256, 769), 0.96, keep_largest=False),
 ]
 
 
@@ -104,7 +101,7 @@ def likely_sheet_background(rgb: tuple[int, int, int]) -> bool:
 def likely_fringe(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
     is_cyan_panel = b > 128 and g > 118 and r > 68 and b >= r + 10
-    is_green_panel = g > 130 and r < 110 and b < 110
+    is_green_panel = g > 180 and r < 100 and b < 100
     is_white_jpeg_edge = r > 204 and g > 204 and b > 204
     return is_cyan_panel or is_green_panel or is_white_jpeg_edge
 
@@ -198,7 +195,7 @@ def remove_green_spill(img: Image.Image, radius: int = 2) -> Image.Image:
                 if touches_transparency:
                     break
 
-            if a < 250 or touches_transparency:
+            if a < 80 and touches_transparency:
                 changes[(x, y)] = TRANSPARENT
             else:
                 neutral = max(r, b)
@@ -409,20 +406,15 @@ def make_preview(items: list[tuple[CropSpec, Image.Image]]) -> Image.Image:
 def main() -> None:
     if not BASE_REFERENCE.exists():
         raise SystemExit(f"Missing base reference sheet: {BASE_REFERENCE}")
-    if not SPECIAL_REFERENCE.exists():
-        raise SystemExit(f"Missing special reference sheet: {SPECIAL_REFERENCE}")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     PCX_DIR.mkdir(parents=True, exist_ok=True)
 
-    sheets = {
-        "base": Image.open(BASE_REFERENCE).convert("RGB"),
-        "special": Image.open(SPECIAL_REFERENCE).convert("RGB"),
-    }
+    sheet = Image.open(BASE_REFERENCE).convert("RGB")
     frames: list[tuple[CropSpec, Image.Image]] = []
     frame_by_name: dict[str, Image.Image] = {}
     for spec in FRAMES:
-        frame = make_frame(sheets[spec.source], spec)
+        frame = make_frame(sheet, spec)
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
         frame_by_name[spec.name] = frame
