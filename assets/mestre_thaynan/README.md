@@ -18,7 +18,7 @@ Portrait frames keep their separate select-screen sizes.
 - `sprites/pcx/*.pcx` - indexed 256-color frames for future SFF import.
 - `sprites/mestre_thaynan_sprite_sheet_preview.png` - labeled contact sheet.
 - `sprites/palette_strip.png` - current working palette.
-- `reference/black_tiger_maestro_base_moves_v3.png` - current and only visual
+- `reference/mestre_thaynan_final_reference.png` - current and only visual
   reference sheet used by the extractor.
 - `tools/generate_mestre_thaynan_sprites.py` - reproducible reference-sheet
   extractor.
@@ -27,21 +27,18 @@ Portrait frames keep their separate select-screen sizes.
 
 The extracted pass includes:
 
-- Idle loop: `idle_00` through `idle_03` from the v3 base sheet
-- Prayer guard: `prayer_guard`
-- Walk cycle: `walk_00` through `walk_03` from the v3 base sheet
+- Idle loop: `idle_00` through `idle_03`
+- Walk forward cycle: `walk_00` through `walk_03`
+- Walk backward source frames: `walk_back_00` through `walk_back_03`
+- Guard/block source frames: `prayer_guard`, `block_00`, `block_01`
 - Low stance / crouch: `crouch`
 - Jump neutral: `jump_neutral`
-- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk` from the v3
-  light-punch and high-kick rows (`black_tiger_palm` is also mapped to the heavy
-  punch SFF slot for a stronger current test attack).
-- Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
-  `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
-  `tiger_roar_projectile` as temporary placeholders from the v3 sheet
-- Reactions and KO poses: `hit_high`, `hit_recoil`, `knockdown`, `ko` as
-  temporary placeholders from the v3 sheet
+- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk`
+- Dash source frame: `sidewalk_step`
+- Reactions, knockdown, and win poses: `hit_high`, `hit_recoil`, `knockdown`,
+  `ko`, `win_00`, `win_01`
 - Portrait references: `portrait_neutral`, `portrait_tiger_roar` derived from
-  the v3 sheet
+  the final sheet
 - MUGEN portrait slots: `portrait_small` for sprite `9000,0` at 25x25 and
   `portrait_big` for sprite `9000,1` at 120x140
 - Costume/stance reference: `jacket_alt_idle`
@@ -55,7 +52,7 @@ The gameplay design follows the cleaner sleeveless Black Tiger Maestro sheet:
 - Lean older martial artist build.
 - Sleeveless black Black Tiger shirt for the current placeholder set.
 - Loose dark pants and black shoes.
-- Tiger Roar special effect identity.
+- Special moves are intentionally absent until matching sprite art exists.
 
 ## MUGEN Import Notes
 
@@ -74,7 +71,7 @@ Before packaging into SFF:
 
 1. Hand-clean JPEG artifacts around outlines and effects.
 2. Normalize sprite axes and foot placement.
-3. Add in-betweens for idle, walk, normals, and specials.
+3. Add in-betweens for idle, walk, normals, and reactions.
 4. Crop each frame consistently around the axis.
 5. Confirm shared palette behavior across all frames.
 6. Build the `.air` animation timings.

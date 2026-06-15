@@ -2,7 +2,7 @@
 """Extract Mestre Thaynan source sprites from the provided reference sheet.
 
 The input sheet is stored at:
-  assets/mestre_thaynan/reference/black_tiger_maestro_base_moves_v3.png
+  assets/mestre_thaynan/reference/mestre_thaynan_final_reference.png
 
 The output files are source-art frames for review and MUGEN / IKEMEN import
 prep. They are not a finished SFF: a pixel artist should still clean the JPEG
@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_base_moves_v3.png"
+BASE_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "mestre_thaynan_final_reference.png"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -42,46 +42,50 @@ class CropSpec:
     keep_largest: bool = True
 
 
-# Coordinates are measured against the 1024x1024 v3 base sheet. Placeholder
-# specials, hurt states, and portraits intentionally reuse this same sheet until
-# dedicated art exists.
+# Coordinates are measured against the 640x640 final reference sheet. Every
+# generated frame comes from this sheet; no older reference art is mixed in.
 FRAMES = [
     # Fighting idle row.
-    CropSpec("idle_00", "Idle 0", (0, 35, 204, 256)),
-    CropSpec("idle_01", "Idle 1", (204, 35, 408, 256)),
-    CropSpec("idle_02", "Idle 2", (408, 35, 612, 256)),
-    CropSpec("idle_03", "Idle 3", (612, 35, 816, 256)),
+    CropSpec("idle_00", "Idle 0", (0, 14, 80, 102)),
+    CropSpec("idle_01", "Idle 1", (80, 14, 160, 102)),
+    CropSpec("idle_02", "Idle 2", (160, 14, 240, 102)),
+    CropSpec("idle_03", "Idle 3", (240, 14, 320, 102)),
     # Walk-forward row.
-    CropSpec("walk_00", "Walk 0", (0, 287, 171, 512)),
-    CropSpec("walk_01", "Walk 1", (171, 287, 342, 512)),
-    CropSpec("walk_02", "Walk 2", (342, 287, 513, 512)),
-    CropSpec("walk_03", "Walk 3", (513, 287, 684, 512)),
-    CropSpec("sidewalk_step", "Walk 4", (684, 287, 855, 512)),
-    CropSpec("jacket_alt_idle", "Walk 5", (855, 287, 1024, 512)),
+    CropSpec("walk_00", "Walk 0", (320, 18, 384, 102)),
+    CropSpec("walk_01", "Walk 1", (384, 18, 448, 102)),
+    CropSpec("walk_02", "Walk 2", (448, 18, 512, 102)),
+    CropSpec("walk_03", "Walk 3", (512, 18, 576, 102)),
+    CropSpec("sidewalk_step", "Dash Placeholder", (0, 512, 64, 558), keep_largest=False),
+    CropSpec("jacket_alt_idle", "Win Placeholder", (462, 606, 522, 640)),
+    # Walk-backward row.
+    CropSpec("walk_back_00", "Walk Back 0", (0, 122, 64, 204)),
+    CropSpec("walk_back_01", "Walk Back 1", (64, 122, 128, 204)),
+    CropSpec("walk_back_02", "Walk Back 2", (128, 122, 192, 204)),
+    CropSpec("walk_back_03", "Walk Back 3", (192, 122, 256, 204)),
     # Light punch row.
-    CropSpec("prayer_guard", "Punch Ready", (0, 548, 256, 769)),
-    CropSpec("stand_lp", "Light Punch 1", (0, 548, 256, 769), keep_largest=False),
-    CropSpec("stand_hp", "Light Punch 2", (256, 548, 512, 769), keep_largest=False),
-    CropSpec("black_tiger_palm", "Light Punch 3", (512, 548, 768, 769), keep_largest=False),
+    CropSpec("stand_lp", "Light Punch", (64, 330, 128, 394), keep_largest=False),
+    CropSpec("stand_hp", "Strong Punch", (384, 330, 448, 394), keep_largest=False),
+    CropSpec("stand_hp_02", "Strong Punch 2", (448, 330, 512, 394), keep_largest=False),
+    CropSpec("stand_hp_03", "Strong Punch 3", (512, 330, 576, 394), keep_largest=False),
     # High kick row.
-    CropSpec("jump_neutral", "Kick Placeholder", (0, 804, 192, 1024), 0.88, keep_largest=False),
-    CropSpec("crane_anti_air", "High Kick 1", (0, 804, 192, 1024), 0.88, keep_largest=False),
-    CropSpec("stand_hk", "High Kick 2", (192, 804, 384, 1024), 0.88, keep_largest=False),
-    CropSpec("stand_lk", "Light Kick Placeholder", (855, 287, 1024, 512)),
-    # Temporary special placeholders from v3 until dedicated special art exists.
-    CropSpec("crouch", "Low Stance Placeholder", (0, 548, 256, 769)),
-    CropSpec("tiger_roar_start", "Special Placeholder 1", (0, 548, 256, 769), keep_largest=False),
-    CropSpec("tiger_roar_charge", "Special Placeholder 2", (256, 548, 512, 769), keep_largest=False),
-    CropSpec("prayer_counter", "Special Placeholder 3", (512, 548, 768, 769), keep_largest=False),
-    CropSpec("tiger_roar_projectile", "Special Placeholder 4", (512, 548, 768, 769), keep_largest=False),
-    # Temporary hurt / KO placeholders from v3.
-    CropSpec("hit_high", "Hit Placeholder", (0, 548, 256, 769)),
-    CropSpec("hit_recoil", "Recoil Placeholder", (0, 548, 256, 769)),
-    CropSpec("knockdown", "Knockdown Placeholder", (0, 287, 171, 512)),
-    CropSpec("ko", "KO Placeholder", (0, 35, 204, 256)),
-    # Portrait crops derived from v3 base art.
-    CropSpec("portrait_neutral", "Portrait", (0, 35, 204, 256), 0.96, keep_largest=False),
-    CropSpec("portrait_tiger_roar", "Punch Portrait", (0, 548, 256, 769), 0.96, keep_largest=False),
+    CropSpec("stand_lk", "Light Kick", (256, 432, 320, 498), 0.88, keep_largest=False),
+    CropSpec("stand_hk", "Strong Kick", (576, 432, 640, 498), 0.88, keep_largest=False),
+    CropSpec("stand_hk_01", "Strong Kick 2", (512, 432, 576, 498), 0.88, keep_largest=False),
+    # Jump, crouch, guard/block, dash, hurt, knockdown, and win.
+    CropSpec("jump_neutral", "Jump", (320, 122, 384, 204), 0.88),
+    CropSpec("crouch", "Crouch", (0, 226, 64, 306), 0.94),
+    CropSpec("prayer_guard", "Guard", (320, 226, 384, 306), 0.94),
+    CropSpec("hit_high", "Hurt 0", (320, 512, 384, 558), 0.90, keep_largest=False),
+    CropSpec("hit_recoil", "Hurt 1", (384, 512, 448, 558), 0.90, keep_largest=False),
+    CropSpec("knockdown", "Knockdown", (183, 606, 263, 640), 0.94),
+    CropSpec("ko", "Down", (263, 606, 343, 640), 0.94),
+    CropSpec("block_00", "Block 0", (0, 606, 46, 640), 0.94),
+    CropSpec("block_01", "Block 1", (46, 606, 92, 640), 0.94),
+    CropSpec("win_00", "Win 0", (462, 606, 522, 640), 0.96),
+    CropSpec("win_01", "Win 1", (522, 606, 581, 640), 0.96),
+    # Portrait crops derived from this same sheet.
+    CropSpec("portrait_neutral", "Portrait", (0, 14, 80, 102), 0.96, keep_largest=False),
+    CropSpec("portrait_tiger_roar", "Punch Portrait", (0, 328, 128, 410), 0.96, keep_largest=False),
 ]
 
 
@@ -409,6 +413,10 @@ def main() -> None:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     PCX_DIR.mkdir(parents=True, exist_ok=True)
+    for old_png in OUT_DIR.glob("*.png"):
+        old_png.unlink()
+    for old_pcx in PCX_DIR.glob("*.pcx"):
+        old_pcx.unlink()
 
     sheet = Image.open(BASE_REFERENCE).convert("RGB")
     frames: list[tuple[CropSpec, Image.Image]] = []

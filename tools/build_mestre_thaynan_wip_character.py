@@ -78,30 +78,21 @@ SPRITES = [
     SpriteSpec(152, 0, "hit_high", 0.90),
     SpriteSpec(154, 0, "hit_recoil", 0.90),
     SpriteSpec(170, 0, "ko"),
-    SpriteSpec(175, 0, "jacket_alt_idle"),
-    SpriteSpec(190, 0, "jacket_alt_idle"),
+    SpriteSpec(175, 0, "win_00"),
+    SpriteSpec(190, 0, "win_00"),
     SpriteSpec(200, 0, "stand_lp"),
-    SpriteSpec(210, 0, "black_tiger_palm"),
+    SpriteSpec(210, 0, "stand_hp"),
     SpriteSpec(230, 0, "stand_lk"),
     SpriteSpec(240, 0, "stand_hk", 0.88),
     SpriteSpec(400, 0, "crouch"),
-    SpriteSpec(410, 0, "black_tiger_palm"),
+    SpriteSpec(410, 0, "stand_hp"),
     SpriteSpec(430, 0, "crouch"),
     SpriteSpec(440, 0, "stand_hk", 0.88),
     SpriteSpec(600, 0, "jump_neutral", 0.88),
-    SpriteSpec(610, 0, "crane_anti_air", 0.88),
+    SpriteSpec(610, 0, "stand_hk", 0.88),
     SpriteSpec(630, 0, "jump_neutral", 0.88),
-    SpriteSpec(640, 0, "crane_anti_air", 0.88),
-    SpriteSpec(900, 0, "jacket_alt_idle"),
-    SpriteSpec(1000, 0, "black_tiger_palm"),
-    SpriteSpec(1100, 0, "crane_anti_air", 0.88),
-    SpriteSpec(1200, 0, "prayer_guard"),
-    SpriteSpec(1210, 0, "prayer_counter"),
-    SpriteSpec(1300, 0, "sidewalk_step"),
-    SpriteSpec(1400, 0, "tiger_roar_start"),
-    SpriteSpec(1400, 1, "tiger_roar_charge"),
-    SpriteSpec(1400, 2, "prayer_counter"),
-    SpriteSpec(1400, 3, "tiger_roar_projectile"),
+    SpriteSpec(640, 0, "stand_hk", 0.88),
+    SpriteSpec(900, 0, "win_00"),
     SpriteSpec(5000, 0, "hit_high", 0.90),
     SpriteSpec(5001, 0, "hit_recoil", 0.90),
     SpriteSpec(5002, 0, "hit_recoil", 0.90),
@@ -196,12 +187,6 @@ def write_air(path: Path) -> None:
         action(630, [(630, 0, 8)], "8,-60, 42,-20"),
         action(640, [(640, 0, 12)], "8,-78, 72,-24"),
         action(900, [(900, 0, 40)]),
-        action(1000, [(1000, 0, 16)], "15,-70, 70,-35"),
-        action(1100, [(1100, 0, 18)], "8,-90, 72,-26"),
-        action(1200, [(1200, 0, 18)]),
-        action(1210, [(1210, 0, 18)], "10,-75, 76,-20"),
-        action(1300, [(1300, 0, 14)]),
-        action(1400, [(1400, 0, 8), (1400, 1, 8), (1400, 2, 10), (1400, 3, 12)], "18,-75, 92,-20"),
     ]
     for anim in [5000, 5010, 5020, 5030, 5050]:
         chunks.append(action(anim, [(anim, 0, 6)]))
@@ -513,241 +498,11 @@ trigger1 = AnimTime = 0
 value = 50
 ctrl = 1
 
-; ---------------------------------------------------------------------------
-; Specials
 
-[Statedef 1000]
-type = S
-movetype = A
-physics = S
-anim = 1000
-ctrl = 0
-velset = 0,0
-sprpriority = 2
-
-[State 1000, Hit]
-type = HitDef
-trigger1 = Time = 4
-attr = S, SA
-damage = 92, 10
-animtype = Hard
-guardflag = MA
-hitflag = MAF
-priority = 4, Hit
-pausetime = 12,12
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 15
-ground.hittime = 18
-ground.velocity = -6
-air.velocity = -3,-5
-
-[State 1000, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 1100]
-type = S
-movetype = A
-physics = S
-anim = 1100
-ctrl = 0
-velset = 0,0
-sprpriority = 2
-
-[State 1100, Hit]
-type = HitDef
-trigger1 = Time = 3
-attr = S, SA
-damage = 84, 8
-animtype = Up
-guardflag = MA
-hitflag = MAF
-priority = 4, Hit
-pausetime = 10,10
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 8
-ground.hittime = 16
-ground.velocity = -2,-7
-air.velocity = -2,-7
-fall = 1
-
-[State 1100, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 1200]
-type = S
-movetype = I
-physics = S
-anim = 1200
-ctrl = 0
-velset = 0,0
-sprpriority = 2
-
-[State 1200, CounterWindow]
-type = HitOverride
-trigger1 = Time < 16
-attr = SCA, NA, SA
-slot = 0
-stateno = 1210
-time = 1
-
-[State 1200, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 1210]
-type = S
-movetype = A
-physics = S
-anim = 1210
-ctrl = 0
-velset = 0,0
-sprpriority = 2
-
-[State 1210, Hit]
-type = HitDef
-trigger1 = Time = 2
-attr = S, SA
-damage = 110, 10
-animtype = Hard
-guardflag = MA
-hitflag = MAF
-priority = 5, Hit
-pausetime = 12,12
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 14
-ground.hittime = 20
-ground.velocity = -7
-air.velocity = -3,-6
-
-[State 1210, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 1300]
-type = S
-movetype = I
-physics = S
-anim = 1300
-ctrl = 0
-velset = 3.4,0
-sprpriority = 2
-
-[State 1300, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
-
-[Statedef 1400]
-type = S
-movetype = A
-physics = S
-anim = 1400
-ctrl = 0
-velset = 0,0
-sprpriority = 2
-
-[State 1400, Hit]
-type = HitDef
-trigger1 = Time = 12
-attr = S, SA
-damage = 130, 14
-animtype = Hard
-guardflag = MA
-hitflag = MAF
-priority = 5, Hit
-pausetime = 14,14
-sparkno = -1
-guard.sparkno = -1
-hitsound = -1
-guardsound = -1
-ground.type = High
-ground.slidetime = 16
-ground.hittime = 22
-ground.velocity = -8
-air.velocity = -4,-6
-
-[State 1400, End]
-type = ChangeState
-trigger1 = AnimTime = 0
-value = 0
-ctrl = 1
 """
 
 
 CMD = """; Mestre Thaynan WIP command file
-
-[Command]
-name = "QCF_x"
-command = ~D, DF, F, x
-time = 15
-
-[Command]
-name = "QCF_y"
-command = ~D, DF, F, y
-time = 15
-
-[Command]
-name = "DP_x"
-command = ~F, D, DF, x
-time = 15
-
-[Command]
-name = "DP_y"
-command = ~F, D, DF, y
-time = 15
-
-[Command]
-name = "QCB_x"
-command = ~D, DB, B, x
-time = 15
-
-[Command]
-name = "QCB_y"
-command = ~D, DB, B, y
-time = 15
-
-[Command]
-name = "QCF_a"
-command = ~D, DF, F, a
-time = 15
-
-[Command]
-name = "QCF_b"
-command = ~D, DF, F, b
-time = 15
-
-[Command]
-name = "QCB_a"
-command = ~D, DB, B, a
-time = 15
-
-[Command]
-name = "QCB_b"
-command = ~D, DB, B, b
-time = 15
 
 [Command]
 name = "x"
@@ -795,46 +550,6 @@ command = /$D
 time = 1
 
 [Statedef -1]
-
-[State -1, Black Tiger Palm]
-type = ChangeState
-value = 1000
-triggerall = command = "QCF_x" || command = "QCF_y"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, Crane Anti-Air]
-type = ChangeState
-value = 1100
-triggerall = command = "DP_x" || command = "DP_y"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, Prayer Guard]
-type = ChangeState
-value = 1200
-triggerall = command = "QCB_x" || command = "QCB_y"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, Sidewalk Step]
-type = ChangeState
-value = 1300
-triggerall = command = "QCF_a" || command = "QCF_b"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
-
-[State -1, Tiger Roar]
-type = ChangeState
-value = 1400
-triggerall = command = "QCB_a" || command = "QCB_b"
-triggerall = statetype = S
-triggerall = ctrl
-trigger1 = 1
 
 [State -1, Air Attack]
 type = ChangeState
@@ -889,14 +604,11 @@ What works:
 - Loads using mestre_thaynan.sff and mestre_thaynan.air
 - Idle, walk, jump, crouch using the current extracted Mestre frames
 - Four basic buttons: x/y punches, a/b kicks
-- QCF+P: Black Tiger Palm
-- DP+P: Crane Anti-Air
-- QCB+P: Prayer Guard counter stance
-- QCF+K: Sidewalk Step
-- QCB+K: Tiger Roar test attack
+- Guard/block, hurt, knockdown, and win placeholder frames from the sheet
 
 Known limitations:
 - This is not a final balanced character.
+- Special moves are intentionally disabled until matching sprite art exists.
 - Requires mestre_thaynan.sff to be rebuilt with SprMake2 after sprite changes.
 - Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.

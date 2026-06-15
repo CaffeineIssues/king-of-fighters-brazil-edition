@@ -9,17 +9,12 @@ What works:
 - Loads using mestre_thaynan.sff and mestre_thaynan.air
 - Idle, walk, jump, crouch using the current extracted Mestre frames
 - Four basic buttons: x/y punches, a/b kicks
-- QCF+P: Black Tiger Palm
-- DP+P: Crane Anti-Air
-- QCB+P: Prayer Guard counter stance
-- QCF+K: Sidewalk Step
-- QCB+K: Tiger Roar test attack
+- Guard/block, hurt, knockdown, and win placeholder frames from the sheet
 
 Known limitations:
 - This is not a final balanced character.
+- Special moves are intentionally disabled until matching sprite art exists.
 - Requires mestre_thaynan.sff to be rebuilt with SprMake2 after sprite changes.
-  The SFF binary may be absent from source-control changes when it would contain
-  stale sprites from an older reference sheet.
 - Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
