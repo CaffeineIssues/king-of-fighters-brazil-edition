@@ -18,8 +18,10 @@ Portrait frames keep their separate select-screen sizes.
 - `sprites/pcx/*.pcx` - indexed 256-color frames for future SFF import.
 - `sprites/mestre_thaynan_sprite_sheet_preview.png` - labeled contact sheet.
 - `sprites/palette_strip.png` - current working palette.
-- `reference/black_tiger_maestro_reference_v2.png` - current visual reference
-  sheet.
+- `reference/black_tiger_maestro_base_moves_v3.png` - current base movement and
+  normal attack visual reference sheet.
+- `reference/black_tiger_maestro_reference_v2.png` - fallback special move,
+  hurt, KO, and portrait reference sheet.
 - `reference/black_tiger_maestro_reference.jpg` - previous visual reference
   sheet kept for comparison.
 - `tools/generate_mestre_thaynan_sprites.py` - reproducible reference-sheet
@@ -29,14 +31,14 @@ Portrait frames keep their separate select-screen sizes.
 
 The extracted pass includes:
 
-- Idle loop: `idle_00` through `idle_03`
+- Idle loop: `idle_00` through `idle_03` from the v3 base sheet
 - Prayer guard: `prayer_guard`
-- Walk cycle: `walk_00` through `walk_03`
+- Walk cycle: `walk_00` through `walk_03` from the v3 base sheet
 - Low stance / crouch: `crouch`
 - Jump neutral: `jump_neutral`
-- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk` from the
-  updated rapid-punch and crane-kick rows (`black_tiger_palm` is also mapped to
-  the heavy punch SFF slot for a stronger current test attack).
+- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk` from the v3
+  light-punch and high-kick rows (`black_tiger_palm` is also mapped to the heavy
+  punch SFF slot for a stronger current test attack).
 - Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
   `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
   `tiger_roar_projectile`
@@ -48,13 +50,15 @@ The extracted pass includes:
 
 ## Visual Direction
 
-The design follows the provided Black Tiger Maestro sprite sheet:
+The base gameplay design now follows the cleaner sleeveless Black Tiger Maestro
+sheet, while special placeholders still use the earlier navy jacket sheet:
 
 - Long center-parted dark gray hair.
 - Rectangular glasses.
 - Lean older martial artist build.
-- Navy track jacket with yellow sleeve stripes.
-- Light Black Tiger shirt.
+- Sleeveless black Black Tiger shirt for idle, walk, punch, and kick frames.
+- Navy track jacket with yellow sleeve stripes for temporary special/hurt/KO
+  placeholders.
 - Loose dark pants and black shoes.
 - Tiger Roar special effect identity.
 

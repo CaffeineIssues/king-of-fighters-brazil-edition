@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Extract Mestre Thaynan source sprites from the provided reference sheet.
 
-The input sheet is stored at:
+The input sheets are stored at:
+  assets/mestre_thaynan/reference/black_tiger_maestro_base_moves_v3.png
   assets/mestre_thaynan/reference/black_tiger_maestro_reference_v2.png
 
 The output files are source-art frames for review and MUGEN / IKEMEN import
@@ -19,7 +20,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_reference_v2.png"
+BASE_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_base_moves_v3.png"
+SPECIAL_REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "black_tiger_maestro_reference_v2.png"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -40,46 +42,49 @@ class CropSpec:
     box: tuple[int, int, int, int]
     ground_ratio: float = 0.94
     keep_largest: bool = True
+    source: str = "base"
 
 
-# Coordinates are measured against the downloaded 768x1370 v2 reference sheet.
-# Crops intentionally include a small margin so the edge flood-fill can remove
-# the light-blue cell background without eating into outlines.
+# Coordinates for base movement/normal frames are measured against the 1024x1024
+# v3 base sheet. Special/portrait fallback coordinates use the 768x1370 v2
+# sheet until new special art exists.
 FRAMES = [
-    # Full-body stance / movement row.
-    CropSpec("idle_00", "Idle 0", (16, 280, 108, 436)),
-    CropSpec("idle_01", "Idle 1", (111, 280, 199, 436)),
-    CropSpec("idle_02", "Idle 2", (205, 280, 293, 436)),
-    CropSpec("idle_03", "Idle 3", (297, 280, 384, 436)),
-    CropSpec("walk_00", "Walk 0", (16, 280, 108, 436)),
-    CropSpec("walk_01", "Walk 1", (111, 280, 199, 436)),
-    CropSpec("walk_02", "Walk 2", (205, 280, 293, 436)),
-    CropSpec("walk_03", "Walk 3", (297, 280, 384, 436)),
-    CropSpec("sidewalk_step", "Sidewalk Step", (476, 280, 567, 436)),
-    CropSpec("jacket_alt_idle", "Alt Idle", (664, 280, 752, 436)),
-    # Punching Combos & Techniques / new moves row.
-    CropSpec("prayer_guard", "Prayer Guard", (17, 514, 110, 669)),
-    CropSpec("stand_lp", "Rapid Punch 1", (111, 514, 202, 669), keep_largest=False),
-    CropSpec("stand_hp", "Rapid Punch 2", (205, 514, 296, 669), keep_largest=False),
-    CropSpec("black_tiger_palm", "Rapid Punch 3", (297, 514, 387, 669), keep_largest=False),
-    CropSpec("jump_neutral", "Jump", (389, 514, 476, 669), 0.88),
-    CropSpec("crane_anti_air", "Crane Kick", (479, 514, 569, 669), 0.88, keep_largest=False),
-    CropSpec("stand_hk", "HK Crane Kick", (570, 514, 661, 669), 0.88, keep_largest=False),
-    CropSpec("stand_lk", "LK Stance", (664, 514, 752, 669)),
-    # Special move row.
-    CropSpec("crouch", "Low Stance", (20, 716, 159, 874)),
-    CropSpec("tiger_roar_start", "Tiger Roar Start", (161, 716, 298, 874), keep_largest=False),
-    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (300, 716, 438, 874), keep_largest=False),
-    CropSpec("prayer_counter", "Tiger Roar", (439, 716, 577, 874), keep_largest=False),
-    CropSpec("tiger_roar_projectile", "Tiger Projectile", (578, 716, 751, 874), keep_largest=False),
+    # Fighting idle row.
+    CropSpec("idle_00", "Idle 0", (0, 35, 204, 256)),
+    CropSpec("idle_01", "Idle 1", (204, 35, 408, 256)),
+    CropSpec("idle_02", "Idle 2", (408, 35, 612, 256)),
+    CropSpec("idle_03", "Idle 3", (612, 35, 816, 256)),
+    # Walk-forward row.
+    CropSpec("walk_00", "Walk 0", (0, 287, 171, 512)),
+    CropSpec("walk_01", "Walk 1", (171, 287, 342, 512)),
+    CropSpec("walk_02", "Walk 2", (342, 287, 513, 512)),
+    CropSpec("walk_03", "Walk 3", (513, 287, 684, 512)),
+    CropSpec("sidewalk_step", "Walk 4", (684, 287, 855, 512)),
+    CropSpec("jacket_alt_idle", "Walk 5", (855, 287, 1024, 512)),
+    # Light punch row.
+    CropSpec("prayer_guard", "Punch Ready", (0, 548, 256, 769)),
+    CropSpec("stand_lp", "Light Punch 1", (0, 548, 256, 769), keep_largest=False),
+    CropSpec("stand_hp", "Light Punch 2", (256, 548, 512, 769), keep_largest=False),
+    CropSpec("black_tiger_palm", "Light Punch 3", (512, 548, 768, 769), keep_largest=False),
+    # High kick row.
+    CropSpec("jump_neutral", "Kick Ready", (768, 804, 1024, 1024)),
+    CropSpec("crane_anti_air", "High Kick 1", (0, 804, 192, 1024), 0.88, keep_largest=False),
+    CropSpec("stand_hk", "High Kick 2", (192, 804, 384, 1024), 0.88, keep_largest=False),
+    CropSpec("stand_lk", "High Kick Recovery", (768, 804, 1024, 1024)),
+    # Special move row fallback from v2.
+    CropSpec("crouch", "Low Stance", (20, 716, 159, 874), source="special"),
+    CropSpec("tiger_roar_start", "Tiger Roar Start", (161, 716, 298, 874), keep_largest=False, source="special"),
+    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (300, 716, 438, 874), keep_largest=False, source="special"),
+    CropSpec("prayer_counter", "Tiger Roar", (439, 716, 577, 874), keep_largest=False, source="special"),
+    CropSpec("tiger_roar_projectile", "Tiger Projectile", (578, 716, 751, 874), keep_largest=False, source="special"),
     # Hurt / KO row.
-    CropSpec("hit_high", "Hit High", (88, 919, 231, 1010), 0.90),
-    CropSpec("hit_recoil", "Hit Recoil", (233, 919, 375, 1010), 0.90),
-    CropSpec("knockdown", "Knockdown", (376, 919, 549, 1010), 0.94),
-    CropSpec("ko", "KO", (550, 919, 681, 1010), 0.94),
+    CropSpec("hit_high", "Hit High", (88, 919, 231, 1010), 0.90, source="special"),
+    CropSpec("hit_recoil", "Hit Recoil", (233, 919, 375, 1010), 0.90, source="special"),
+    CropSpec("knockdown", "Knockdown", (376, 919, 549, 1010), 0.94, source="special"),
+    CropSpec("ko", "KO", (550, 919, 681, 1010), 0.94, source="special"),
     # Portrait crops for select/victory references.
-    CropSpec("portrait_neutral", "Portrait", (36, 1057, 365, 1338), 0.96, keep_largest=False),
-    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (404, 1057, 735, 1338), 0.96, keep_largest=False),
+    CropSpec("portrait_neutral", "Portrait", (36, 1057, 365, 1338), 0.96, keep_largest=False, source="special"),
+    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (404, 1057, 735, 1338), 0.96, keep_largest=False, source="special"),
 ]
 
 
@@ -91,14 +96,17 @@ def likely_sheet_background(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
     # The sheet uses light cyan panels and medium blue separators. Restrict the
     # rule to blue-dominant, high-brightness colors so the jacket and shirt stay.
-    return b > 145 and g > 135 and r > 80 and b >= r + 20 and g >= r + 5
+    blue_panel = b > 145 and g > 135 and r > 80 and b >= r + 20 and g >= r + 5
+    green_panel = g > 150 and r < 90 and b < 90
+    return blue_panel or green_panel
 
 
 def likely_fringe(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
     is_cyan_panel = b > 128 and g > 118 and r > 68 and b >= r + 10
+    is_green_panel = g > 130 and r < 110 and b < 110
     is_white_jpeg_edge = r > 204 and g > 204 and b > 204
-    return is_cyan_panel or is_white_jpeg_edge
+    return is_cyan_panel or is_green_panel or is_white_jpeg_edge
 
 
 def remove_edge_background(crop: Image.Image) -> Image.Image:
@@ -166,6 +174,41 @@ def remove_light_fringe(img: Image.Image, radius: int = 2) -> Image.Image:
     return src
 
 
+def green_spill(rgb: tuple[int, int, int]) -> bool:
+    r, g, b = rgb
+    return g > 30 and g > r + 8 and g > b + 8
+
+
+def remove_green_spill(img: Image.Image, radius: int = 2) -> Image.Image:
+    src = img.convert("RGBA")
+    px = src.load()
+    changes: dict[tuple[int, int], tuple[int, int, int, int]] = {}
+    for y in range(src.height):
+        for x in range(src.width):
+            r, g, b, a = px[x, y]
+            if a == 0 or not green_spill((r, g, b)):
+                continue
+
+            touches_transparency = False
+            for ny in range(max(0, y - radius), min(src.height, y + radius + 1)):
+                for nx in range(max(0, x - radius), min(src.width, x + radius + 1)):
+                    if px[nx, ny][3] == 0:
+                        touches_transparency = True
+                        break
+                if touches_transparency:
+                    break
+
+            if a < 250 or touches_transparency:
+                changes[(x, y)] = TRANSPARENT
+            else:
+                neutral = max(r, b)
+                changes[(x, y)] = (neutral, neutral, neutral, a)
+
+    for (x, y), value in changes.items():
+        px[x, y] = value
+    return src
+
+
 def keep_largest_component(img: Image.Image) -> Image.Image:
     src = img.convert("RGBA")
     px = src.load()
@@ -222,12 +265,13 @@ def pad_transparent(img: Image.Image, margin: int = 1) -> Image.Image:
 
 def scale_gameplay_frame(img: Image.Image, spec: CropSpec) -> Image.Image:
     if spec.name.startswith("portrait_") or img.height <= GAMEPLAY_MAX_HEIGHT:
-        return pad_transparent(img)
+        return pad_transparent(remove_green_spill(img))
 
     scale = GAMEPLAY_MAX_HEIGHT / img.height
     new_size = (max(1, round(img.width * scale)), GAMEPLAY_MAX_HEIGHT)
     scaled = img.resize(new_size, Image.Resampling.LANCZOS)
     scaled = remove_light_fringe(scaled, radius=1)
+    scaled = remove_green_spill(scaled)
     return pad_transparent(trim_transparent(scaled))
 
 
@@ -235,6 +279,7 @@ def make_frame(sheet: Image.Image, spec: CropSpec) -> Image.Image:
     crop = sheet.crop(spec.box)
     transparent = remove_edge_background(crop)
     defringed = remove_light_fringe(transparent)
+    defringed = remove_green_spill(defringed)
     if spec.keep_largest:
         defringed = keep_largest_component(defringed)
     trimmed = trim_transparent(defringed)
@@ -362,17 +407,22 @@ def make_preview(items: list[tuple[CropSpec, Image.Image]]) -> Image.Image:
 
 
 def main() -> None:
-    if not REFERENCE.exists():
-        raise SystemExit(f"Missing reference sheet: {REFERENCE}")
+    if not BASE_REFERENCE.exists():
+        raise SystemExit(f"Missing base reference sheet: {BASE_REFERENCE}")
+    if not SPECIAL_REFERENCE.exists():
+        raise SystemExit(f"Missing special reference sheet: {SPECIAL_REFERENCE}")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     PCX_DIR.mkdir(parents=True, exist_ok=True)
 
-    sheet = Image.open(REFERENCE).convert("RGB")
+    sheets = {
+        "base": Image.open(BASE_REFERENCE).convert("RGB"),
+        "special": Image.open(SPECIAL_REFERENCE).convert("RGB"),
+    }
     frames: list[tuple[CropSpec, Image.Image]] = []
     frame_by_name: dict[str, Image.Image] = {}
     for spec in FRAMES:
-        frame = make_frame(sheet, spec)
+        frame = make_frame(sheets[spec.source], spec)
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
         frame_by_name[spec.name] = frame
