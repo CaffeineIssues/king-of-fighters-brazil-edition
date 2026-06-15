@@ -227,3 +227,11 @@ See:
 - `roster.md` for character briefs and move kits.
 - `stages-and-music.md` for stage and audio direction.
 - `implementation-standards.md` for MUGEN / IKEMEN authoring conventions.
+
+## First Production Target
+
+Mestre Thaynan is the first planned character. His roster entry establishes the
+initial character standard for reference-based visual translation, complete move
+design, state planning, and AI behavior.
+
+First-pass sprite source files are available at `assets/mestre_thaynan/`.

@@ -1,0 +1,26 @@
+; Definition file for Mestre Thaynan WIP
+
+[Info]
+name = "Mestre Thaynan"
+displayname = "Mestre Thaynan"
+versiondate = 06,15,2026
+mugenversion = 1.0
+author = "Brazilian Meme Fighters Team"
+pal.defaults = 1
+localcoord = 320,240
+
+[Files]
+cmd = mestre_thaynan.cmd
+cns = mestre_thaynan.cns
+st = mestre_thaynan.cns
+stcommon = common1.cns
+sprite = mestre_thaynan.sff
+anim = mestre_thaynan.air
+
+[Palette Keymap]
+x = 1
+y = 1
+z = 1
+a = 1
+b = 1
+c = 1

@@ -1,0 +1,433 @@
+; Mestre Thaynan WIP constants and states
+
+[Data]
+life = 1000
+attack = 100
+defence = 100
+fall.defence_up = 50
+liedown.time = 60
+airjuggle = 15
+sparkno = -1
+guard.sparkno = -1
+KO.echo = 0
+volume = 0
+IntPersistIndex = 60
+FloatPersistIndex = 40
+
+[Size]
+xscale = 0.82
+yscale = 0.82
+ground.back = 16
+ground.front = 20
+air.back = 14
+air.front = 18
+height = 82
+attack.dist = 120
+proj.attack.dist = 90
+proj.doscale = 0
+head.pos = -6, -82
+mid.pos = -4, -50
+shadowoffset = 0
+draw.offset = 0,0
+
+[Velocity]
+walk.fwd = 2.1
+walk.back = -1.8
+run.fwd = 4.2, 0
+run.back = -4.0,-3.5
+jump.neu = 0,-8.1
+jump.back = -2.3
+jump.fwd = 2.4
+runjump.back = -2.4,-8.0
+runjump.fwd = 3.8,-8.0
+airjump.neu = 0,-8.0
+airjump.back = -2.4
+airjump.fwd = 2.4
+air.gethit.groundrecover = -.15,-3.5
+air.gethit.airrecover.mul = .5,.2
+air.gethit.airrecover.add = 0,-4.5
+air.gethit.airrecover.back = -1
+air.gethit.airrecover.fwd = 0
+air.gethit.airrecover.up = -2
+air.gethit.airrecover.down = 1.5
+
+[Movement]
+airjump.num = 0
+airjump.height = 35
+yaccel = .44
+stand.friction = .85
+crouch.friction = .82
+stand.friction.threshold = 2
+crouch.friction.threshold = .05
+air.gethit.groundlevel = 25
+air.gethit.groundrecover.ground.threshold = -20
+air.gethit.groundrecover.groundlevel = 10
+air.gethit.airrecover.threshold = -1
+air.gethit.airrecover.yaccel = .35
+air.gethit.trip.groundlevel = 15
+down.bounce.offset = 0, 20
+down.bounce.yaccel = .4
+down.bounce.groundlevel = 12
+down.friction.threshold = .05
+
+[Quotes]
+victory1 = "Form first. Power follows."
+victory2 = "The tiger waits before it strikes."
+
+; ---------------------------------------------------------------------------
+; Basic normals
+
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+sprpriority = 2
+
+[State 200, Hit]
+type = HitDef
+trigger1 = Time = 2
+attr = S, NA
+damage = 24, 4
+animtype = Light
+guardflag = MA
+hitflag = MAF
+priority = 3, Hit
+pausetime = 6,6
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 8
+ground.hittime = 10
+ground.velocity = -2
+air.velocity = -2,-3
+
+[State 200, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+sprpriority = 2
+
+[State 210, Hit]
+type = HitDef
+trigger1 = Time = 4
+attr = S, NA
+damage = 68, 8
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 10,10
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 12
+ground.hittime = 15
+ground.velocity = -4
+air.velocity = -3,-4
+
+[State 210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 230]
+type = S
+movetype = A
+physics = S
+anim = 230
+ctrl = 0
+sprpriority = 2
+
+[State 230, Hit]
+type = HitDef
+trigger1 = Time = 3
+attr = S, NA
+damage = 28, 4
+animtype = Light
+guardflag = MA
+hitflag = MAF
+priority = 3, Hit
+pausetime = 6,6
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = Low
+ground.slidetime = 8
+ground.hittime = 11
+ground.velocity = -2
+air.velocity = -2,-3
+
+[State 230, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 240]
+type = S
+movetype = A
+physics = S
+anim = 240
+ctrl = 0
+sprpriority = 2
+
+[State 240, Hit]
+type = HitDef
+trigger1 = Time = 5
+attr = S, NA
+damage = 76, 8
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 10,10
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 12
+ground.hittime = 16
+ground.velocity = -5
+air.velocity = -3,-5
+
+[State 240, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+; ---------------------------------------------------------------------------
+; Air attacks
+
+[Statedef 600]
+type = A
+movetype = A
+physics = A
+anim = 600
+ctrl = 0
+sprpriority = 2
+
+[State 600, Hit]
+type = HitDef
+trigger1 = Time = 2
+attr = A, NA
+damage = 42, 5
+animtype = Medium
+guardflag = HA
+hitflag = MAF
+priority = 3, Hit
+pausetime = 7,7
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 10
+ground.hittime = 13
+ground.velocity = -3
+air.velocity = -2,-4
+
+[State 600, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 50
+ctrl = 1
+
+; ---------------------------------------------------------------------------
+; Specials
+
+[Statedef 1000]
+type = S
+movetype = A
+physics = S
+anim = 1000
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+[State 1000, Hit]
+type = HitDef
+trigger1 = Time = 4
+attr = S, SA
+damage = 92, 10
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 12,12
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 15
+ground.hittime = 18
+ground.velocity = -6
+air.velocity = -3,-5
+
+[State 1000, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 1100]
+type = S
+movetype = A
+physics = S
+anim = 1100
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+[State 1100, Hit]
+type = HitDef
+trigger1 = Time = 3
+attr = S, SA
+damage = 84, 8
+animtype = Up
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 10,10
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 8
+ground.hittime = 16
+ground.velocity = -2,-7
+air.velocity = -2,-7
+fall = 1
+
+[State 1100, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 1200]
+type = S
+movetype = I
+physics = S
+anim = 1200
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+[State 1200, CounterWindow]
+type = HitOverride
+trigger1 = Time < 16
+attr = SCA, NA, SA
+slot = 0
+stateno = 1210
+time = 1
+
+[State 1200, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 1210]
+type = S
+movetype = A
+physics = S
+anim = 1210
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+[State 1210, Hit]
+type = HitDef
+trigger1 = Time = 2
+attr = S, SA
+damage = 110, 10
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 5, Hit
+pausetime = 12,12
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 14
+ground.hittime = 20
+ground.velocity = -7
+air.velocity = -3,-6
+
+[State 1210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 1300]
+type = S
+movetype = I
+physics = S
+anim = 1300
+ctrl = 0
+velset = 3.4,0
+sprpriority = 2
+
+[State 1300, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 1400]
+type = S
+movetype = A
+physics = S
+anim = 1400
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+[State 1400, Hit]
+type = HitDef
+trigger1 = Time = 12
+attr = S, SA
+damage = 130, 14
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 5, Hit
+pausetime = 14,14
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 16
+ground.hittime = 22
+ground.velocity = -8
+air.velocity = -4,-6
+
+[State 1400, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1

@@ -18,6 +18,35 @@ plane clean.
 
 ## Stage Specs
 
+### Praca do Mestre
+
+**Time:** Late afternoon  
+**Mood:** Quiet, focused, street-training discipline  
+**Suggested Characters:** Mestre Thaynan, technical counter routes
+
+#### Visual Layers
+
+1. Soft blue sky, distant houses, and a quiet street receding into depth.
+2. Public square trees, painted trunks, benches, and a low wall.
+3. Mosaic sidewalk fight plane with clean foot readability.
+4. Background training props: broom handle, two wooden blocks, and a small bag
+   placed near the edge so they never hide attacks.
+
+#### Background Animation
+
+- Leaves moving in short wind loops.
+- One passerby stops training, watches, then slowly steps back.
+- Training blocks bounce subtly on heavy slams.
+- Tree shadows shift slightly between rounds.
+
+#### MUGEN Notes
+
+- Suggested `boundleft = -155`, `boundright = 155`.
+- Suggested `zoffset = 202` to emphasize the sidewalk plane.
+- Keep props outside the center 70 percent of the screen.
+- Palette should use pale stone, sun-faded green, navy, and warm skin tones so
+  Thaynan's black uniform remains the strongest silhouette.
+
 ### Favela Rooftop
 
 **Time:** Sunset  
@@ -195,6 +224,7 @@ Brazilian influences:
 
 | Stage | Tempo | Style | Lead Sound | Notes |
 | --- | --- | --- | --- | --- |
+| Praca do Mestre | 128 BPM | Minimal kung fu funk / street groove | Muted guitar and shakuhachi-like synth | Sparse intro, sharp percussion accents for counters |
 | Favela Rooftop | 150 BPM | Samba-rock fighter theme | Brass stab synth | Heroic sunset hook with crowd claps |
 | Feira Livre | 138 BPM | Pagode groove | Plucked synth / cavaquinho | Light syncopation, strong bass |
 | Carnival Avenue | 160 BPM | Axe / samba parade | Brass ensemble sample | High energy, loop with percussion break |
