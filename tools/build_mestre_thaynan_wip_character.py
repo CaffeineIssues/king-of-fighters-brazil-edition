@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build a WIP playable Mestre Thaynan character.
 
-This creates a minimal test character that uses the known-good KFM sprite and
-animation files as a temporary base:
+This creates a minimal test character definition and SprMake2 input file from
+the extracted source PCX frames:
 
   chars/mestre_thaynan/
     mestre_thaynan.def
@@ -13,9 +13,9 @@ animation files as a temporary base:
     readme.txt
 
 The reference-extracted Mestre frames remain in assets/mestre_thaynan/. Use the
-generated SprMake2 definition to build a real Mestre SFF on Windows with the
-official Elecbyte tool. The resulting character is a local testing placeholder,
-not a finished competitive release.
+generated SprMake2 definition to build the SFF on Windows with the official
+Elecbyte tool. The resulting character is a local testing placeholder, not a
+finished competitive release.
 """
 
 from __future__ import annotations
@@ -81,11 +81,11 @@ SPRITES = [
     SpriteSpec(175, 0, "jacket_alt_idle"),
     SpriteSpec(190, 0, "jacket_alt_idle"),
     SpriteSpec(200, 0, "stand_lp"),
-    SpriteSpec(210, 0, "stand_hp"),
+    SpriteSpec(210, 0, "black_tiger_palm"),
     SpriteSpec(230, 0, "stand_lk"),
     SpriteSpec(240, 0, "stand_hk", 0.88),
     SpriteSpec(400, 0, "crouch"),
-    SpriteSpec(410, 0, "stand_hp"),
+    SpriteSpec(410, 0, "black_tiger_palm"),
     SpriteSpec(430, 0, "crouch"),
     SpriteSpec(440, 0, "stand_hk", 0.88),
     SpriteSpec(600, 0, "jump_neutral", 0.88),
@@ -247,8 +247,8 @@ cmd     = mestre_thaynan.cmd
 cns     = mestre_thaynan.cns
 st      = mestre_thaynan.cns
 stcommon = common1.cns
-sprite  = ../kfm/kfm.sff
-anim    = ../kfm/kfm.air
+sprite  = mestre_thaynan.sff
+anim    = mestre_thaynan.air
 
 ; Maps character selection buttons to palette numbers.
 [Palette Keymap]
@@ -881,14 +881,13 @@ trigger1 = 1
 README = """Mestre Thaynan WIP Playable Test
 ================================
 
-This is a temporary playable placeholder using KFM's known-good SFF/AIR files
-as a base while Mestre Thaynan's reference-extracted sprites are prepared for a
-proper SprMake2 build.
+This is a temporary playable placeholder using Mestre Thaynan's generated
+SFF/AIR files.
 
 What works:
 - Selection via data/select.def
-- Selection via data/select.def without loading the broken experimental SFF
-- Idle, walk, jump, crouch using KFM base animations
+- Loads using mestre_thaynan.sff and mestre_thaynan.air
+- Idle, walk, jump, crouch using the current extracted Mestre frames
 - Four basic buttons: x/y punches, a/b kicks
 - QCF+P: Black Tiger Palm
 - DP+P: Crane Anti-Air
@@ -898,7 +897,7 @@ What works:
 
 Known limitations:
 - This is not a final balanced character.
-- Visuals are temporarily KFM until Mestre's official SFF is built.
+- Requires mestre_thaynan.sff to be rebuilt with SprMake2 after sprite changes.
 - Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
@@ -910,9 +909,7 @@ Portrait note:
 - 9000,0 uses portrait_small.pcx at 25x25 for the select-grid icon.
 - 9000,1 uses portrait_big.pcx at 120x140 for the large portrait slot.
 
-After the SprMake2 build succeeds, switch mestre_thaynan.def back to:
-  sprite  = mestre_thaynan.sff
-  anim    = mestre_thaynan.air
+After sprite extraction changes, rebuild the SFF before testing.
 """
 
 

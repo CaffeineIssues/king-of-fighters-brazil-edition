@@ -36,6 +36,7 @@ class CropSpec:
     title: str
     box: tuple[int, int, int, int]
     ground_ratio: float = 0.94
+    keep_largest: bool = True
 
 
 # Coordinates are measured against the downloaded 574x1024 reference sheet.
@@ -57,25 +58,25 @@ FRAMES = [
     CropSpec("prayer_guard", "Prayer Guard", (13, 384, 82, 500)),
     CropSpec("stand_lp", "LP Claw", (83, 384, 151, 500)),
     CropSpec("stand_hp", "HP Tiger Claw", (153, 384, 221, 500)),
-    CropSpec("black_tiger_palm", "Black Tiger Palm", (222, 384, 289, 500)),
+    CropSpec("black_tiger_palm", "Black Tiger Palm", (222, 384, 289, 500), keep_largest=False),
     CropSpec("jump_neutral", "Jump", (291, 384, 356, 500), 0.88),
-    CropSpec("crane_anti_air", "Crane Kick", (358, 384, 425, 500), 0.88),
+    CropSpec("crane_anti_air", "Crane Kick", (358, 384, 425, 500), 0.88, keep_largest=False),
     CropSpec("stand_hk", "HK Side Kick", (426, 384, 494, 500), 0.88),
     CropSpec("stand_lk", "LK Stance", (496, 384, 562, 500)),
     # Special move row.
     CropSpec("crouch", "Low Stance", (15, 535, 119, 653)),
-    CropSpec("tiger_roar_start", "Tiger Roar Start", (120, 535, 223, 653)),
-    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (224, 535, 327, 653)),
-    CropSpec("prayer_counter", "Tiger Roar", (328, 535, 431, 653)),
-    CropSpec("tiger_roar_projectile", "Tiger Projectile", (432, 535, 561, 653)),
+    CropSpec("tiger_roar_start", "Tiger Roar Start", (120, 535, 223, 653), keep_largest=False),
+    CropSpec("tiger_roar_charge", "Tiger Roar Charge", (224, 535, 327, 653), keep_largest=False),
+    CropSpec("prayer_counter", "Tiger Roar", (328, 535, 431, 653), keep_largest=False),
+    CropSpec("tiger_roar_projectile", "Tiger Projectile", (432, 535, 561, 653), keep_largest=False),
     # Hurt / KO row.
     CropSpec("hit_high", "Hit High", (66, 687, 173, 755), 0.90),
     CropSpec("hit_recoil", "Hit Recoil", (174, 687, 280, 755), 0.90),
     CropSpec("knockdown", "Knockdown", (281, 687, 410, 755), 0.94),
     CropSpec("ko", "KO", (411, 687, 509, 755), 0.94),
     # Portrait crops for select/victory references.
-    CropSpec("portrait_neutral", "Portrait", (27, 790, 273, 1000), 0.96),
-    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (302, 790, 549, 1000), 0.96),
+    CropSpec("portrait_neutral", "Portrait", (27, 790, 273, 1000), 0.96, keep_largest=False),
+    CropSpec("portrait_tiger_roar", "Tiger Roar Portrait", (302, 790, 549, 1000), 0.96, keep_largest=False),
 ]
 
 
@@ -88,6 +89,13 @@ def likely_sheet_background(rgb: tuple[int, int, int]) -> bool:
     # The sheet uses light cyan panels and medium blue separators. Restrict the
     # rule to blue-dominant, high-brightness colors so the jacket and shirt stay.
     return b > 145 and g > 135 and r > 80 and b >= r + 20 and g >= r + 5
+
+
+def likely_fringe(rgb: tuple[int, int, int]) -> bool:
+    r, g, b = rgb
+    is_cyan_panel = b > 135 and g > 125 and r > 75 and b >= r + 14
+    is_white_jpeg_edge = r > 214 and g > 214 and b > 214
+    return is_cyan_panel or is_white_jpeg_edge
 
 
 def remove_edge_background(crop: Image.Image) -> Image.Image:
@@ -131,6 +139,66 @@ def remove_edge_background(crop: Image.Image) -> Image.Image:
     return out
 
 
+def remove_light_fringe(img: Image.Image, radius: int = 2) -> Image.Image:
+    src = img.convert("RGBA")
+    px = src.load()
+    to_clear: set[tuple[int, int]] = set()
+    for y in range(src.height):
+        for x in range(src.width):
+            r, g, b, a = px[x, y]
+            if a == 0 or not likely_fringe((r, g, b)):
+                continue
+            touches_transparency = False
+            for ny in range(max(0, y - radius), min(src.height, y + radius + 1)):
+                for nx in range(max(0, x - radius), min(src.width, x + radius + 1)):
+                    if px[nx, ny][3] == 0:
+                        touches_transparency = True
+                        break
+                if touches_transparency:
+                    break
+            if touches_transparency:
+                to_clear.add((x, y))
+    for x, y in to_clear:
+        px[x, y] = (0, 0, 0, 0)
+    return src
+
+
+def keep_largest_component(img: Image.Image) -> Image.Image:
+    src = img.convert("RGBA")
+    px = src.load()
+    visited: set[tuple[int, int]] = set()
+    components: list[list[tuple[int, int]]] = []
+
+    for y in range(src.height):
+        for x in range(src.width):
+            if (x, y) in visited or px[x, y][3] == 0:
+                continue
+            component: list[tuple[int, int]] = []
+            queue: deque[tuple[int, int]] = deque([(x, y)])
+            visited.add((x, y))
+            while queue:
+                cx, cy = queue.popleft()
+                component.append((cx, cy))
+                for nx, ny in ((cx - 1, cy), (cx + 1, cy), (cx, cy - 1), (cx, cy + 1)):
+                    if nx < 0 or ny < 0 or nx >= src.width or ny >= src.height:
+                        continue
+                    if (nx, ny) in visited or px[nx, ny][3] == 0:
+                        continue
+                    visited.add((nx, ny))
+                    queue.append((nx, ny))
+            components.append(component)
+
+    if not components:
+        return src
+
+    largest = set(max(components, key=len))
+    cleaned = Image.new("RGBA", src.size, TRANSPARENT)
+    out = cleaned.load()
+    for x, y in largest:
+        out[x, y] = px[x, y]
+    return cleaned
+
+
 def trim_transparent(img: Image.Image, margin: int = 2) -> Image.Image:
     bbox = img.getbbox()
     if bbox is None:
@@ -146,7 +214,10 @@ def trim_transparent(img: Image.Image, margin: int = 2) -> Image.Image:
 def make_frame(sheet: Image.Image, spec: CropSpec) -> Image.Image:
     crop = sheet.crop(spec.box)
     transparent = remove_edge_background(crop)
-    return trim_transparent(transparent)
+    defringed = remove_light_fringe(transparent)
+    if spec.keep_largest:
+        defringed = keep_largest_component(defringed)
+    return trim_transparent(defringed)
 
 
 def make_portrait_small(portrait: Image.Image) -> Image.Image:

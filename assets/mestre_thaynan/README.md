@@ -3,10 +3,10 @@
 This folder contains the first reference-based sprite source pass for Mestre
 Thaynan.
 
-The extracted frames are prepared for a future official SprMake2 SFF build. The
-temporary playable test character under `chars/mestre_thaynan/` is registered in
-`data/select.def`, but it currently uses KFM's known-good SFF/AIR files as a
-base so it can load while the custom Mestre SFF is being prepared.
+The extracted frames feed the official SprMake2 SFF build used by the temporary
+playable test character under `chars/mestre_thaynan/`. After changing these
+frames, rebuild `chars/mestre_thaynan/mestre_thaynan.sff` with SprMake2 before
+testing.
 
 ## Contents
 
@@ -29,6 +29,8 @@ The extracted pass includes:
 - Low stance / crouch: `crouch`
 - Jump neutral: `jump_neutral`
 - Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk`
+  (`black_tiger_palm` is also mapped to the heavy punch SFF slot for a stronger
+  current test attack)
 - Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
   `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
   `tiger_roar_projectile`
@@ -52,9 +54,10 @@ The design follows the provided Black Tiger Maestro sprite sheet:
 
 ## MUGEN Import Notes
 
-The PCX files use palette index 0 as the transparent key color. They are
-reference-derived source frames, not final cropped production frames. Before
-packaging into SFF:
+The PCX files use palette index 0 as the transparent key color. The extractor
+removes edge-connected sheet background, light JPEG fringe, and detached crop
+artifacts from normal character frames. They are reference-derived source
+frames, not final cropped production frames. Before packaging into SFF:
 
 1. Hand-clean JPEG artifacts around outlines and effects.
 2. Normalize sprite axes and foot placement.
