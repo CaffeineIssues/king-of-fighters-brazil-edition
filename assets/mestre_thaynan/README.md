@@ -3,9 +3,9 @@
 This folder contains the first reference-based sprite source pass for Mestre
 Thaynan.
 
-The frames are intentionally not registered in `data/select.def` yet because
-the character does not have complete `.def`, `.cmd`, `.cns`, `.air`, `.sff`, and
-`.snd` files.
+The extracted frames are also packaged into a temporary playable test character
+under `chars/mestre_thaynan/` and registered in `data/select.def`. This is a WIP
+test harness, not a finished character release.
 
 ## Contents
 
