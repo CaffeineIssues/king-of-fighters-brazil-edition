@@ -64,8 +64,13 @@ The PCX files use palette index 0 as the transparent key color. The extractor
 removes edge-connected sheet background, light JPEG fringe, and detached crop
 artifacts from normal character frames, then adds a one-pixel transparent safety
 pad so no visible white border remains at frame edges. They are
-reference-derived source frames, not final cropped production frames. Before
-packaging into SFF:
+reference-derived source frames, not final cropped production frames.
+
+PCX export uses hard alpha thresholding before quantization so semi-transparent
+edge pixels do not get matted against the green transparency key. This prevents
+green outlines around the character in MUGEN.
+
+Before packaging into SFF:
 
 1. Hand-clean JPEG artifacts around outlines and effects.
 2. Normalize sprite axes and foot placement.

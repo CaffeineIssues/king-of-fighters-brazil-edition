@@ -29,6 +29,8 @@ CELL_BG = (48, 51, 58, 255)
 GRID = (58, 61, 68, 255)
 GROUND = (96, 91, 78, 255)
 GAMEPLAY_MAX_HEIGHT = 108
+PCX_TRANSPARENT_RGB = (0, 255, 0)
+PCX_ALPHA_CUTOFF = 220
 
 
 @dataclass(frozen=True)
@@ -257,33 +259,47 @@ def make_portrait_big(portrait: Image.Image) -> Image.Image:
 def quantized_palette(frames: list[Image.Image]) -> list[int]:
     atlas_w = max(frame.width for frame in frames)
     atlas_h = sum(frame.height for frame in frames)
-    atlas = Image.new("RGBA", (atlas_w, atlas_h), TRANSPARENT)
+    atlas = Image.new("RGB", (atlas_w, atlas_h), (0, 0, 0))
     y = 0
     for frame in frames:
-        atlas.alpha_composite(frame, (0, y))
+        rgba = frame.convert("RGBA")
+        rgb = Image.new("RGB", rgba.size, (0, 0, 0))
+        rgb_px = rgb.load()
+        src_px = rgba.load()
+        for py in range(rgba.height):
+            for px in range(rgba.width):
+                r, g, b, a = src_px[px, py]
+                if a >= PCX_ALPHA_CUTOFF:
+                    rgb_px[px, py] = (r, g, b)
+        atlas.paste(rgb, (0, y))
         y += frame.height
 
-    opaque = Image.new("RGBA", atlas.size, (0, 255, 0, 255))
-    opaque.alpha_composite(atlas)
-    paletted = opaque.convert("RGB").quantize(colors=255, method=Image.Quantize.MEDIANCUT)
+    paletted = atlas.quantize(colors=255, method=Image.Quantize.MEDIANCUT)
     palette = paletted.getpalette()[: 255 * 3]
-    return [0, 255, 0] + palette + [0, 0, 0] * (256 - 1 - len(palette) // 3)
+    return [*PCX_TRANSPARENT_RGB] + palette + [0, 0, 0] * (256 - 1 - len(palette) // 3)
 
 
 def save_indexed_pcx(frame: Image.Image, palette: list[int], name: str) -> None:
-    base = Image.new("RGBA", frame.size, (0, 255, 0, 255))
-    base.alpha_composite(frame)
-    rgb = base.convert("RGB")
+    rgba = frame.convert("RGBA")
+    rgb = Image.new("RGB", frame.size, PCX_TRANSPARENT_RGB)
+    rgb_px = rgb.load()
+    src_px = rgba.load()
+    for y in range(frame.height):
+        for x in range(frame.width):
+            r, g, b, a = src_px[x, y]
+            if a >= PCX_ALPHA_CUTOFF:
+                rgb_px[x, y] = (r, g, b)
+
     pal = Image.new("P", (1, 1))
     pal.putpalette(palette)
     indexed = rgb.quantize(palette=pal, dither=Image.Dither.NONE)
 
-    # Restore transparent key for alpha pixels.
-    alpha = frame.getchannel("A")
+    # Restore transparent key after quantization. Semi-transparent source pixels
+    # are treated as transparent instead of being matted against key green.
     pix = indexed.load()
     for y in range(frame.height):
         for x in range(frame.width):
-            if alpha.getpixel((x, y)) < 128:
+            if src_px[x, y][3] < PCX_ALPHA_CUTOFF:
                 pix[x, y] = 0
 
     indexed.save(PCX_DIR / f"{name}.pcx")
