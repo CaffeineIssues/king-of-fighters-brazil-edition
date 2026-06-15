@@ -18,8 +18,8 @@ cmd     = mestre_thaynan.cmd
 cns     = mestre_thaynan.cns
 st      = mestre_thaynan.cns
 stcommon = common1.cns
-sprite  = mestre_thaynan.sff
-anim    = mestre_thaynan.air
+sprite  = ../kfm/kfm.sff
+anim    = ../kfm/kfm.air
 
 ; Maps character selection buttons to palette numbers.
 [Palette Keymap]

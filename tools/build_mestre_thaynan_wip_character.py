@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 """Build a WIP playable Mestre Thaynan character.
 
-This creates a minimal test character from the extracted source PCX frames:
+This creates a minimal test character that uses the known-good KFM sprite and
+animation files as a temporary base:
 
   chars/mestre_thaynan/
     mestre_thaynan.def
     mestre_thaynan.cmd
     mestre_thaynan.cns
     mestre_thaynan.air
-    mestre_thaynan.sff
+    mestre_thaynan-sff.def
     readme.txt
 
-The SFF writer targets SFF v1.01, which MUGEN 1.0/1.1 can load. The resulting
-character is a local testing placeholder, not a finished competitive release.
+The reference-extracted Mestre frames remain in assets/mestre_thaynan/. Use the
+generated SprMake2 definition to build a real Mestre SFF on Windows with the
+official Elecbyte tool. The resulting character is a local testing placeholder,
+not a finished competitive release.
 """
 
 from __future__ import annotations
 
-import struct
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -134,54 +136,6 @@ def pcx_dimensions(path: Path) -> tuple[int, int]:
         return img.size
 
 
-def write_sff(path: Path) -> None:
-    records = []
-    for spec in SPRITES:
-        pcx_path = PCX_DIR / f"{spec.frame}.pcx"
-        if not pcx_path.exists():
-            raise FileNotFoundError(pcx_path)
-        data = pcx_path.read_bytes()
-        width, height = pcx_dimensions(pcx_path)
-        x_axis = width // 2
-        y_axis = max(1, min(height - 1, int(height * spec.ground_ratio)))
-        records.append((spec, data, x_axis, y_axis))
-
-    unique_groups = len({spec.group for spec, _, _, _ in records})
-    offset = 512
-    subfiles = []
-    for idx, (spec, data, x_axis, y_axis) in enumerate(records):
-        next_offset = 0 if idx == len(records) - 1 else offset + 32 + len(data)
-        subheader = struct.pack(
-            "<IIhhhhhb13s",
-            next_offset,
-            len(data),
-            x_axis,
-            y_axis,
-            spec.group,
-            spec.image,
-            0,
-            0,
-            b"",
-        )
-        subfiles.append(subheader + data)
-        offset = next_offset
-
-    header = bytearray(512)
-    header[0:12] = b"ElecbyteSpr\0"
-    # SFF v1.01. MUGEN 1.x can load SFF v1, but it is strict about the
-    # version bytes used by older SprMaker-generated files.
-    header[12:16] = bytes([1, 0, 1, 0])
-    struct.pack_into("<I", header, 16, unique_groups)
-    struct.pack_into("<I", header, 20, len(records))
-    struct.pack_into("<I", header, 24, 512)
-    struct.pack_into("<I", header, 28, 32)
-    header[32] = 0
-    comment = b"Mestre Thaynan WIP SFF generated from reference PCX frames"
-    header[36 : 36 + len(comment)] = comment
-
-    path.write_bytes(bytes(header) + b"".join(subfiles))
-
-
 def action(action_no: int, frames: list[tuple[int, int, int]], clsn1: str | None = None) -> str:
     lines = [f"[Begin Action {action_no}]"]
     lines.extend(
@@ -293,8 +247,8 @@ cmd     = mestre_thaynan.cmd
 cns     = mestre_thaynan.cns
 st      = mestre_thaynan.cns
 stcommon = common1.cns
-sprite  = mestre_thaynan.sff
-anim    = mestre_thaynan.air
+sprite  = ../kfm/kfm.sff
+anim    = ../kfm/kfm.air
 
 ; Maps character selection buttons to palette numbers.
 [Palette Keymap]
@@ -927,12 +881,14 @@ trigger1 = 1
 README = """Mestre Thaynan WIP Playable Test
 ================================
 
-This is a temporary playable placeholder built from the reference-extracted
-sprite frames in assets/mestre_thaynan/.
+This is a temporary playable placeholder using KFM's known-good SFF/AIR files
+as a base while Mestre Thaynan's reference-extracted sprites are prepared for a
+proper SprMake2 build.
 
 What works:
 - Selection via data/select.def
-- Idle, walk, jump, crouch using available frames
+- Selection via data/select.def without loading the broken experimental SFF
+- Idle, walk, jump, crouch using KFM base animations
 - Four basic buttons: x/y punches, a/b kicks
 - QCF+P: Black Tiger Palm
 - DP+P: Crane Anti-Air
@@ -942,11 +898,46 @@ What works:
 
 Known limitations:
 - This is not a final balanced character.
-- The SFF is generated from compressed JPG-derived source art.
-- Many required animations reuse the closest available frame.
+- Visuals are temporarily KFM until Mestre's official SFF is built.
+- Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
 """
+
+
+def write_sprmake2_def(path: Path) -> None:
+    lines = [
+        "[Output]",
+        "filename = chars/mestre_thaynan/mestre_thaynan.sff",
+        "",
+        "[Option]",
+        "input.dir = assets/mestre_thaynan/sprites/pcx",
+        "sprite.compress.5 = lz5",
+        "sprite.compress.8 = rle8",
+        "sprite.compress.24 = none",
+        "sprite.decompressonload = 0",
+        "sprite.detectduplicates = 0",
+        "sprite.autocrop = 1",
+        "pal.detectduplicates = 1",
+        "pal.discardduplicates = 1",
+        "pal.reverseact = 0",
+        "pal.reversepng = 0",
+        "",
+        "[Pal]",
+        "1,1, idle_00.pcx, 0,255",
+        "",
+        "[Option]",
+        "sprite.usepal = 1,1",
+        "",
+        "[Sprite]",
+    ]
+    for spec in SPRITES:
+        pcx_path = PCX_DIR / f"{spec.frame}.pcx"
+        width, height = pcx_dimensions(pcx_path)
+        x_axis = width // 2
+        y_axis = max(1, min(height - 1, int(height * spec.ground_ratio)))
+        lines.append(f"{spec.group}, {spec.image}, {spec.frame}.pcx, {x_axis}, {y_axis}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_text_files() -> None:
@@ -956,11 +947,11 @@ def write_text_files() -> None:
     (CHAR_DIR / "mestre_thaynan.cmd").write_text(CMD, encoding="utf-8")
     (CHAR_DIR / "readme.txt").write_text(README, encoding="utf-8")
     write_air(CHAR_DIR / "mestre_thaynan.air")
+    write_sprmake2_def(CHAR_DIR / "mestre_thaynan-sff.def")
 
 
 def main() -> None:
     write_text_files()
-    write_sff(CHAR_DIR / "mestre_thaynan.sff")
 
 
 if __name__ == "__main__":

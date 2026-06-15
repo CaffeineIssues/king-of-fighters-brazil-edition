@@ -3,9 +3,10 @@
 This folder contains the first reference-based sprite source pass for Mestre
 Thaynan.
 
-The extracted frames are also packaged into a temporary playable test character
-under `chars/mestre_thaynan/` and registered in `data/select.def`. This is a WIP
-test harness, not a finished character release.
+The extracted frames are prepared for a future official SprMake2 SFF build. The
+temporary playable test character under `chars/mestre_thaynan/` is registered in
+`data/select.def`, but it currently uses KFM's known-good SFF/AIR files as a
+base so it can load while the custom Mestre SFF is being prepared.
 
 ## Contents
 
