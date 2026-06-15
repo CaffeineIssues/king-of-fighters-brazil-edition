@@ -34,6 +34,8 @@ The extracted pass includes:
   `tiger_roar_projectile`
 - Reactions and KO poses: `hit_high`, `hit_recoil`, `knockdown`, `ko`
 - Portrait references: `portrait_neutral`, `portrait_tiger_roar`
+- MUGEN portrait slots: `portrait_small` for sprite `9000,0` at 25x25 and
+  `portrait_big` for sprite `9000,1` at 120x140
 - Costume/stance reference: `jacket_alt_idle`
 
 ## Visual Direction

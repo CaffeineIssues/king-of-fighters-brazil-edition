@@ -126,8 +126,8 @@ SPRITES = [
     SpriteSpec(5200, 0, "idle_00"),
     SpriteSpec(5210, 0, "idle_00"),
     SpriteSpec(5300, 0, "jacket_alt_idle"),
-    SpriteSpec(9000, 0, "portrait_neutral", 0.96),
-    SpriteSpec(9000, 1, "portrait_tiger_roar", 0.96),
+    SpriteSpec(9000, 0, "portrait_small", 0.96),
+    SpriteSpec(9000, 1, "portrait_big", 0.96),
 ]
 
 
@@ -902,6 +902,17 @@ Known limitations:
 - Mestre's extracted source frames remain in assets/mestre_thaynan/sprites/.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
+
+To build Mestre's own SFF with the official Windows tool:
+  sprmake2.exe chars\\mestre_thaynan\\mestre_thaynan-sff.def
+
+Portrait note:
+- 9000,0 uses portrait_small.pcx at 25x25 for the select-grid icon.
+- 9000,1 uses portrait_big.pcx at 120x140 for the large portrait slot.
+
+After the SprMake2 build succeeds, switch mestre_thaynan.def back to:
+  sprite  = mestre_thaynan.sff
+  anim    = mestre_thaynan.air
 """
 
 

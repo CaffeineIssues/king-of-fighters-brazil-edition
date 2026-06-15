@@ -149,6 +149,21 @@ def make_frame(sheet: Image.Image, spec: CropSpec) -> Image.Image:
     return trim_transparent(transparent)
 
 
+def make_portrait_small(portrait: Image.Image) -> Image.Image:
+    """Create the standard small select icon for sprite 9000,0."""
+    crop = portrait.crop((45, 0, 175, 130))
+    return crop.resize((25, 25), Image.Resampling.LANCZOS)
+
+
+def make_portrait_big(portrait: Image.Image) -> Image.Image:
+    """Create a controlled big select portrait for sprite 9000,1."""
+    canvas = Image.new("RGBA", (120, 140), TRANSPARENT)
+    crop = portrait.crop((20, 0, 210, 210))
+    crop.thumbnail((120, 140), Image.Resampling.LANCZOS)
+    canvas.alpha_composite(crop, ((120 - crop.width) // 2, 140 - crop.height))
+    return canvas
+
+
 def quantized_palette(frames: list[Image.Image]) -> list[int]:
     atlas_w = max(frame.width for frame in frames)
     atlas_h = sum(frame.height for frame in frames)
@@ -249,8 +264,19 @@ def main() -> None:
 
     sheet = Image.open(REFERENCE).convert("RGB")
     frames: list[tuple[CropSpec, Image.Image]] = []
+    frame_by_name: dict[str, Image.Image] = {}
     for spec in FRAMES:
         frame = make_frame(sheet, spec)
+        frame.save(OUT_DIR / f"{spec.name}.png")
+        frames.append((spec, frame))
+        frame_by_name[spec.name] = frame
+
+    portrait_small = make_portrait_small(frame_by_name["portrait_neutral"])
+    portrait_big = make_portrait_big(frame_by_name["portrait_neutral"])
+    for spec, frame in [
+        (CropSpec("portrait_small", "Small Portrait", (0, 0, 0, 0), 0.96), portrait_small),
+        (CropSpec("portrait_big", "Big Portrait", (0, 0, 0, 0), 0.96), portrait_big),
+    ]:
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
 

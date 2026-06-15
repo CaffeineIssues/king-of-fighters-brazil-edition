@@ -107,5 +107,5 @@ sprite.usepal = 1,1
 5200, 0, idle_00.pcx, 32, 101
 5210, 0, idle_00.pcx, 32, 101
 5300, 0, jacket_alt_idle.pcx, 32, 101
-9000, 0, portrait_neutral.pcx, 119, 201
-9000, 1, portrait_tiger_roar.pcx, 123, 201
+9000, 0, portrait_small.pcx, 12, 24
+9000, 1, portrait_big.pcx, 60, 134

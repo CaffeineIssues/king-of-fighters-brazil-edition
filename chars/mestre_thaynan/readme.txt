@@ -7,7 +7,7 @@ proper SprMake2 build.
 
 What works:
 - Selection via data/select.def
-- Loads using KFM's known-good SFF/AIR files instead of the broken experimental SFF
+- Selection via data/select.def without loading the broken experimental SFF
 - Idle, walk, jump, crouch using KFM base animations
 - Four basic buttons: x/y punches, a/b kicks
 - QCF+P: Black Tiger Palm
@@ -23,9 +23,13 @@ Known limitations:
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
 
-To build Mestre's own SFF later with the official Windows tool:
+To build Mestre's own SFF with the official Windows tool:
   sprmake2.exe chars\mestre_thaynan\mestre_thaynan-sff.def
 
-After that succeeds, switch mestre_thaynan.def back to:
+Portrait note:
+- 9000,0 uses portrait_small.pcx at 25x25 for the select-grid icon.
+- 9000,1 uses portrait_big.pcx at 120x140 for the large portrait slot.
+
+After the SprMake2 build succeeds, switch mestre_thaynan.def back to:
   sprite  = mestre_thaynan.sff
   anim    = mestre_thaynan.air
