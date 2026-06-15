@@ -8,6 +8,10 @@ playable test character under `chars/mestre_thaynan/`. After changing these
 frames, rebuild `chars/mestre_thaynan/mestre_thaynan.sff` with SprMake2 before
 testing.
 
+Gameplay frames are downscaled from the high-resolution reference to about
+110px tall so the face and clothing read closer to KOF/MUGEN character scale.
+Portrait frames keep their separate select-screen sizes.
+
 ## Contents
 
 - `sprites/*.png` - transparent RGBA source frames for review and paintover.
@@ -58,8 +62,10 @@ The design follows the provided Black Tiger Maestro sprite sheet:
 
 The PCX files use palette index 0 as the transparent key color. The extractor
 removes edge-connected sheet background, light JPEG fringe, and detached crop
-artifacts from normal character frames. They are reference-derived source
-frames, not final cropped production frames. Before packaging into SFF:
+artifacts from normal character frames, then adds a one-pixel transparent safety
+pad so no visible white border remains at frame edges. They are
+reference-derived source frames, not final cropped production frames. Before
+packaging into SFF:
 
 1. Hand-clean JPEG artifacts around outlines and effects.
 2. Normalize sprite axes and foot placement.

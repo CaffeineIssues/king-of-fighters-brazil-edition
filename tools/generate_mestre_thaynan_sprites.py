@@ -28,6 +28,7 @@ PREVIEW_BG = (32, 34, 40, 255)
 CELL_BG = (48, 51, 58, 255)
 GRID = (58, 61, 68, 255)
 GROUND = (96, 91, 78, 255)
+GAMEPLAY_MAX_HEIGHT = 108
 
 
 @dataclass(frozen=True)
@@ -211,13 +212,31 @@ def trim_transparent(img: Image.Image, margin: int = 2) -> Image.Image:
     return img.crop((x0, y0, x1, y1))
 
 
+def pad_transparent(img: Image.Image, margin: int = 1) -> Image.Image:
+    padded = Image.new("RGBA", (img.width + margin * 2, img.height + margin * 2), TRANSPARENT)
+    padded.alpha_composite(img, (margin, margin))
+    return padded
+
+
+def scale_gameplay_frame(img: Image.Image, spec: CropSpec) -> Image.Image:
+    if spec.name.startswith("portrait_") or img.height <= GAMEPLAY_MAX_HEIGHT:
+        return pad_transparent(img)
+
+    scale = GAMEPLAY_MAX_HEIGHT / img.height
+    new_size = (max(1, round(img.width * scale)), GAMEPLAY_MAX_HEIGHT)
+    scaled = img.resize(new_size, Image.Resampling.LANCZOS)
+    scaled = remove_light_fringe(scaled, radius=1)
+    return pad_transparent(trim_transparent(scaled))
+
+
 def make_frame(sheet: Image.Image, spec: CropSpec) -> Image.Image:
     crop = sheet.crop(spec.box)
     transparent = remove_edge_background(crop)
     defringed = remove_light_fringe(transparent)
     if spec.keep_largest:
         defringed = keep_largest_component(defringed)
-    return trim_transparent(defringed)
+    trimmed = trim_transparent(defringed)
+    return scale_gameplay_frame(trimmed, spec)
 
 
 def make_portrait_small(portrait: Image.Image) -> Image.Image:
