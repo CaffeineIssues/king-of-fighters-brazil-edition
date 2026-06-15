@@ -4,6 +4,191 @@ These sheets translate the example roster into serious SNK-era fighting game
 characters. Each fighter is inspired by a public meme persona, but the design
 goal is always "believable 1998 arcade combatant" first.
 
+## Team Black Tiger
+
+### Mestre Thaynan
+
+**Nickname:** The Sidewalk Sifu  
+**Age:** 58  
+**Height:** 176 cm  
+**Weight:** 63 kg  
+**Fighting Style:** Black Tiger kung fu, prayer-guard counters, and improvised
+street conditioning  
+**Hometown:** Interior Brazil  
+**Team:** Team Black Tiger  
+**Archetype:** Technical Counter Fighter / Stance Specialist
+
+#### Visual Reference Notes
+
+The reference direction is a lean older martial artist with long center-parted
+dark gray hair, rectangular glasses, sharp cheekbones, and a wiry frame. His
+most iconic costume is a sleeveless black martial arts shirt with white vertical
+characters, loose black pants, black shoes, and a pale cord or towel resting
+around the neck. A secondary palette can use the navy track jacket and white
+Black Tiger Kung Fu shirt from the street-training reference.
+
+For SNK translation, keep him realistic and intimidating rather than goofy:
+slightly hunched posture, narrow shoulders, sinewy forearms, precise hand
+shapes, and a calm stare over the glasses. His silhouette should be defined by
+the prayer-guard hand position, long hair framing the face, and thin limbs that
+snap into sudden tiger-claw strikes.
+
+#### Visual Design
+
+Mestre Thaynan wears a black sleeveless kung fu top with white embroidered
+marks, dark straight-leg training pants, worn black shoes, and a light rope-like
+neck accessory that moves during jumps and heavy attacks. His base palette is
+black, faded white, weathered skin tones, gray hair highlights, and a muted
+cream accent on the neck cord.
+
+Alternate palettes:
+
+- Navy jacket, white Black Tiger shirt, dark pants, black shoes.
+- Sepia training uniform for old martial arts film homage.
+- Dark green shirt with gold tiger markings for boss-style arcade routes.
+
+#### Story
+
+Mestre Thaynan spent years training in public squares, quiet streets, and empty
+courts where passersby mistook his drills for performance. After clips of his
+unusual hand forms and sidewalk conditioning spread online, challengers began
+arriving to test whether the old master was real. He enters the tournament to
+settle the question with discipline: no spectacle, no excuses, only form.
+
+#### Fighting Style
+
+Thaynan controls rhythm rather than space. He uses patient footsies, stance
+cancels, counter windows, and sudden tiger-claw bursts to punish opponents who
+rush in carelessly. He has excellent anti-hop checks and strong close confirms,
+but his walk speed is modest and he must read projectiles instead of overpowering
+them.
+
+Core strengths:
+
+- Strong whiff punishes from far HP and command normals.
+- Prayer Guard counters predictable mids and highs.
+- Stance cancels create pressure ambiguity.
+- High stun output on clean counter hits.
+
+Core weaknesses:
+
+- Low raw damage without counter hits or meter.
+- Slow backward movement.
+- Vulnerable to delayed lows if Prayer Guard is overused.
+- Projectile matchups require careful hop timing and read-based movement.
+
+#### Normal Attacks
+
+- LP: Short vertical palm check from prayer guard.
+- HP: Snapping tiger-claw rake, high counter-hit stun.
+- LK: Low shin tap with the lead foot.
+- HK: Lean side kick with long recovery but excellent reach.
+- Close LP: Two-finger throat feint, fast pressure starter.
+- Close HP: Double palm shock, special cancelable.
+- Close LK: Knee brush into ankle tap.
+- Close HK: Rising instep kick, close launcher on counter hit.
+- Far LP: Glasses-level measuring palm.
+- Far HP: Long tiger-claw swipe, primary whiff punish normal.
+- Far LK: Quick toe poke to stop walk-ins.
+- Far HK: Straight side kick that checks hops and long pokes.
+- Crouch LP: Compact palm jab.
+- Crouch HP: Upward crane palm, anti-air normal.
+- Crouch LK: Low ankle tap.
+- Crouch HK: Sliding leg sweep with poor block recovery.
+- Jump LP: Downward palm tap.
+- Jump HP: Two-hand chop, deep jump-in.
+- Jump LK: Fast knee angle for air-to-air.
+- Jump HK: Long heel drop, cross-up at close spacing.
+
+#### Command Normals
+
+- Forward + HP: Tiger Enters Gate. Advancing overhead claw, special cancelable
+  only on hit.
+- Down-Forward + LP: Sidewalk Needle. Low palm poke that links from crouch LP.
+- Forward + LK: Old Step. Short hop step that avoids low pokes during early
+  frames and can cancel into specials on landing.
+
+#### Special Moves
+
+- QCF + P: Black Tiger Palm. Short-range palm burst. LP is safe but lower
+  damage; HP travels farther and wall-bounces on counter hit near the corner.
+- DP + P: Crane Frames the Moon. Vertical palm anti-air with brief upper-body
+  invulnerability. HP version has slower startup and more juggle reward.
+- QCB + P: Prayer Guard. Counter stance. LP covers highs and mids, HP covers
+  heavier strikes but loses to lows and throws.
+- QCF + K: Sidewalk Step. Low-profile advancing step with LK stop, HK shoulder
+  check, and hold-back retreat follow-ups.
+- QCB + K: Brick Conditioning. Thaynan stamps the floor, creating a short
+  shockwave at his feet. Useful for ending strings and stopping rolls.
+- HCF + P: Sifu Grip. Close command grab that switches sides and leaves the
+  opponent standing at frame advantage instead of causing heavy damage.
+
+#### Super Moves
+
+- QCF, QCF + P: Black Tiger Sequence. Rapid palm, claw, elbow, and heel series
+  that carries to the corner.
+- QCB, QCB + P: Perfect Prayer Reversal. Counter super that catches strikes,
+  freezes the screen, adjusts his glasses, and returns a crushing palm.
+
+#### MAX Super
+
+- QCF, QCB + HP+HK: Mestre do Tigre Preto. Cinematic stance sequence: Thaynan
+  assumes the prayer guard, parries three phantom attacks, pulls the opponent
+  into a sidewalk training circle, and finishes with a focused tiger-claw palm
+  that cracks the pavement.
+
+#### Extra Content
+
+- Intro: Stands in prayer guard, lowers one hand, and calmly adjusts his
+  glasses without looking away.
+- Reference Intro Variant: A broom handle and two training blocks are visible
+  at his feet; he steps past them into fighting stance.
+- Taunt: Demonstrates a slow hand form and says nothing. If completed, slightly
+  increases stun dealt by the next counter hit.
+- Victory A: Returns to prayer guard and bows with a tiny nod.
+- Victory B: Puts on the navy jacket, turns away, and resumes walking like the
+  fight was only training.
+- Defeat: Drops to one knee, one palm on the pavement, glasses tilted but not
+  broken.
+
+#### Stage Suggestion
+
+Praca do Mestre: a quiet Brazilian sidewalk and public square with mosaic
+pavement, trees, a low wall, and simple training objects near the background.
+The stage should evoke the second reference image without copying it literally.
+
+#### MUGEN State Structure
+
+- 1000: Black Tiger Palm
+- 1100: Crane Frames the Moon
+- 1200: Prayer Guard
+- 1210: Prayer Guard Success
+- 1300: Sidewalk Step
+- 1310: Sidewalk Step Stop
+- 1320: Sidewalk Step Shoulder
+- 1330: Sidewalk Step Retreat
+- 1400: Brick Conditioning
+- 1500: Sifu Grip
+- 2000: Black Tiger Sequence
+- 2100: Perfect Prayer Reversal
+- 3000: Mestre do Tigre Preto
+
+#### Animation List
+
+Prayer-guard idle, glasses adjustment, long-hair sway, walk with narrow steps,
+Sidewalk Step low glide, tiger-claw far HP, Crane Frames the Moon anti-air,
+Prayer Guard startup and success freeze, brick-stamp shockwave, command-grab
+side switch, MAX super training-circle stance, bow victory, jacket victory.
+
+#### AI Behavior
+
+Thaynan AI should feel patient. At low levels it pokes with far LP, far LK, and
+Black Tiger Palm. At mid levels it anti-airs hops with crouch HP or Crane Frames
+the Moon, then uses Sidewalk Step to maintain pressure. At high levels it uses
+Prayer Guard after observing repeated jump-ins or heavy buttons, but it should
+not counter with impossible precision. Meter is reserved for confirmed close HP
+routes or Perfect Prayer Reversal against obvious offense.
+
 ## Team Receba
 
 ### Luva de Pedreiro
