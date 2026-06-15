@@ -21,11 +21,11 @@ street conditioning
 #### Visual Reference Notes
 
 The reference direction is a lean older martial artist with long center-parted
-dark gray hair, rectangular glasses, sharp cheekbones, and a wiry frame. His
-most iconic costume is a sleeveless black martial arts shirt with white vertical
-characters, loose black pants, black shoes, and a pale cord or towel resting
-around the neck. A secondary palette can use the navy track jacket and white
-Black Tiger Kung Fu shirt from the street-training reference.
+dark gray hair tied back, rectangular glasses, sharp cheekbones, and a wiry
+frame. His primary costume is the navy track jacket with yellow sleeve stripes,
+light Black Tiger Kung Fu shirt, dark loose pants, and black shoes from the
+provided sprite sheet. The sleeveless black kung fu top can remain an alternate
+palette or story costume, but the jacketed version is the production target.
 
 For SNK translation, keep him realistic and intimidating rather than goofy:
 slightly hunched posture, narrow shoulders, sinewy forearms, precise hand
@@ -35,15 +35,15 @@ snap into sudden tiger-claw strikes.
 
 #### Visual Design
 
-Mestre Thaynan wears a black sleeveless kung fu top with white embroidered
-marks, dark straight-leg training pants, worn black shoes, and a light rope-like
-neck accessory that moves during jumps and heavy attacks. His base palette is
-black, faded white, weathered skin tones, gray hair highlights, and a muted
-cream accent on the neck cord.
+Mestre Thaynan wears a navy track jacket with yellow sleeve stripes over a light
+Black Tiger shirt, dark straight-leg training pants, and worn black shoes. His
+base palette is navy, muted gold, pale blue-white shirt tones, weathered skin
+tones, and gray-brown hair highlights. The jacket hem and tied-back hair should
+move during jumps, knockdowns, and heavy tiger-claw attacks.
 
 Alternate palettes:
 
-- Navy jacket, white Black Tiger shirt, dark pants, black shoes.
+- Sleeveless black kung fu shirt with white vertical markings.
 - Sepia training uniform for old martial arts film homage.
 - Dark green shirt with gold tiger markings for boss-style arcade routes.
 
