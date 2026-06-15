@@ -168,7 +168,9 @@ def write_sff(path: Path) -> None:
 
     header = bytearray(512)
     header[0:12] = b"ElecbyteSpr\0"
-    header[12:16] = bytes([1, 1, 0, 1])
+    # SFF v1.01. MUGEN 1.x can load SFF v1, but it is strict about the
+    # version bytes used by older SprMaker-generated files.
+    header[12:16] = bytes([1, 0, 1, 0])
     struct.pack_into("<I", header, 16, unique_groups)
     struct.pack_into("<I", header, 20, len(records))
     struct.pack_into("<I", header, 24, 512)
@@ -272,26 +274,31 @@ def write_air(path: Path) -> None:
 
 
 DEF = """; Definition file for Mestre Thaynan WIP
+; Based on the stock KFM .def layout so MUGEN loads it like a normal character.
+; Contains all the filenames needed for the character.
 
+; Player information
 [Info]
 name = "Mestre Thaynan"
 displayname = "Mestre Thaynan"
 versiondate = 06,15,2026
 mugenversion = 1.0
 author = "Brazilian Meme Fighters Team"
-pal.defaults = 1
-localcoord = 320,240
+pal.defaults = 1          ;Default palettes in order of preference
+localcoord = 320,240      ;Local coordinate space width and height
 
+; Files for the player
 [Files]
-cmd = mestre_thaynan.cmd
-cns = mestre_thaynan.cns
-st = mestre_thaynan.cns
+cmd     = mestre_thaynan.cmd
+cns     = mestre_thaynan.cns
+st      = mestre_thaynan.cns
 stcommon = common1.cns
-sprite = mestre_thaynan.sff
-anim = mestre_thaynan.air
+sprite  = mestre_thaynan.sff
+anim    = mestre_thaynan.air
 
+; Maps character selection buttons to palette numbers.
 [Palette Keymap]
-x = 1
+x = 1 ;Press button X to select palette 1, etc.
 y = 1
 z = 1
 a = 1
