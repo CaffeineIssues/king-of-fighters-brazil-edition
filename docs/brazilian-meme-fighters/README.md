@@ -233,3 +233,5 @@ See:
 Mestre Thaynan is the first planned character. His roster entry establishes the
 initial character standard for reference-based visual translation, complete move
 design, state planning, and AI behavior.
+
+First-pass sprite source files are available at `assets/mestre_thaynan/`.
