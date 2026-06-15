@@ -98,16 +98,15 @@ def likely_sheet_background(rgb: tuple[int, int, int]) -> bool:
     # The sheet uses light cyan panels and medium blue separators. Restrict the
     # rule to blue-dominant, high-brightness colors so the jacket and shirt stay.
     blue_panel = b > 145 and g > 135 and r > 80 and b >= r + 20 and g >= r + 5
-    green_panel = g > 150 and r < 90 and b < 90
+    green_panel = g > 210 and r < 80 and b < 80
     return blue_panel or green_panel
 
 
 def likely_fringe(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
     is_cyan_panel = b > 128 and g > 118 and r > 68 and b >= r + 10
-    is_green_panel = g > 180 and r < 100 and b < 100
     is_white_jpeg_edge = r > 204 and g > 204 and b > 204
-    return is_cyan_panel or is_green_panel or is_white_jpeg_edge
+    return is_cyan_panel or is_white_jpeg_edge
 
 
 def remove_edge_background(crop: Image.Image) -> Image.Image:
@@ -177,7 +176,7 @@ def remove_light_fringe(img: Image.Image, radius: int = 2) -> Image.Image:
 
 def green_spill(rgb: tuple[int, int, int]) -> bool:
     r, g, b = rgb
-    return g > 30 and g > r + 8 and g > b + 8
+    return g > 110 and g > r + 30 and g > b + 30
 
 
 def remove_green_spill(img: Image.Image, radius: int = 2) -> Image.Image:
@@ -199,11 +198,8 @@ def remove_green_spill(img: Image.Image, radius: int = 2) -> Image.Image:
                 if touches_transparency:
                     break
 
-            if a < 80 and touches_transparency:
-                changes[(x, y)] = TRANSPARENT
-            else:
-                neutral = max(r, b)
-                changes[(x, y)] = (neutral, neutral, neutral, a)
+            neutral = max(r, b)
+            changes[(x, y)] = (neutral, neutral, neutral, a)
 
     for (x, y), value in changes.items():
         px[x, y] = value
