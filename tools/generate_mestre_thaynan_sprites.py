@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "mestre_thaynan_restart_reference.png"
 IDLE_REFERENCE_DIR = ROOT / "assets" / "mestre_thaynan" / "reference" / "idle"
+PORTRAIT_REFERENCE_DIR = ROOT / "assets" / "mestre_thaynan" / "reference" / "portraits"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -227,22 +228,23 @@ def make_external_idle_frame(spec: FrameSpec) -> Image.Image:
     return make_frame(source, idle_spec)
 
 
-def make_portrait_small(portrait: Image.Image) -> Image.Image:
-    bbox = portrait.getbbox()
-    crop = portrait.crop(bbox) if bbox else portrait
-    crop = crop.crop((0, 0, crop.width, max(1, int(crop.height * 0.6))))
+def make_portrait_small() -> Image.Image:
+    source = Image.open(PORTRAIT_REFERENCE_DIR / "portrait_small_source.png").convert("RGBA")
+    bbox = source.getbbox()
+    crop = source.crop(bbox) if bbox else source
     crop.thumbnail((23, 23), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (25, 25), TRANSPARENT)
     canvas.alpha_composite(crop, ((25 - crop.width) // 2, (25 - crop.height) // 2))
     return canvas
 
 
-def make_portrait_big(portrait: Image.Image) -> Image.Image:
-    bbox = portrait.getbbox()
-    crop = portrait.crop(bbox) if bbox else portrait
-    crop.thumbnail((108, 132), Image.Resampling.LANCZOS)
+def make_portrait_big() -> Image.Image:
+    source = Image.open(PORTRAIT_REFERENCE_DIR / "portrait_big_source.png").convert("RGBA")
+    bbox = source.getbbox()
+    crop = source.crop(bbox) if bbox else source
+    crop.thumbnail((120, 140), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (120, 140), TRANSPARENT)
-    canvas.alpha_composite(crop, ((120 - crop.width) // 2, 140 - crop.height - 4))
+    canvas.alpha_composite(crop, ((120 - crop.width) // 2, (140 - crop.height) // 2))
     return canvas
 
 
@@ -361,15 +363,16 @@ def main() -> None:
         frame_by_name[spec.name] = frame
 
     for spec, frame in [
-        (FrameSpec("portrait_small", "Small Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_small(frame_by_name["portrait_neutral"])),
-        (FrameSpec("portrait_big", "Big Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_big(frame_by_name["portrait_neutral"])),
+        (FrameSpec("portrait_small", "Small Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_small()),
+        (FrameSpec("portrait_big", "Big Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_big()),
     ]:
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
 
-    palette = quantized_palette([frame for _, frame in frames])
+    palette = quantized_palette([frame for spec, frame in frames if not spec.name.startswith("portrait_")])
     for spec, frame in frames:
-        save_indexed_pcx(frame, palette, spec.name)
+        frame_palette = quantized_palette([frame]) if spec.name.startswith("portrait_") else palette
+        save_indexed_pcx(frame, frame_palette, spec.name)
     make_palette_strip(palette).save(OUT_DIR / "palette_strip.png")
     make_preview(frames).save(OUT_DIR / "mestre_thaynan_sprite_sheet_preview.png")
 

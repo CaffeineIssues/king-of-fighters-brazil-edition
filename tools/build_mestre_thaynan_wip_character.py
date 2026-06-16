@@ -581,6 +581,8 @@ def write_sprmake2_def(path: Path) -> None:
         else:
             x_axis = GAMEPLAY_AXIS_X
             y_axis = GAMEPLAY_AXIS_Y
+        if spec.group == 9000 and spec.image == 0:
+            lines.extend(["", "[Option]", "sprite.usepal = -1", "", "[Sprite]"])
         lines.append(f"{spec.group}, {spec.image}, {spec.frame}.pcx, {x_axis}, {y_axis}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

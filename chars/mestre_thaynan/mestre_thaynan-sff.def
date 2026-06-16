@@ -189,5 +189,10 @@ sprite.usepal = 1,1
 5300, 0, idle_00.pcx, 130, 158
 5300, 1, idle_01.pcx, 130, 158
 5300, 2, idle_02.pcx, 130, 158
+
+[Option]
+sprite.usepal = -1
+
+[Sprite]
 9000, 0, portrait_small.pcx, 12, 24
 9000, 1, portrait_big.pcx, 60, 134
