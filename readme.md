@@ -67,6 +67,7 @@ The characters represented are public internet personalities and memes used as h
 ## 🚧 Development Status
 
 Current Version: **Alpha**
+Current Status: **Need Help**
 
 ### Planned
 
