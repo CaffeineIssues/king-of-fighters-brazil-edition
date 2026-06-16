@@ -114,7 +114,11 @@ def action(action_no: int, frames: list[tuple[int, int, int]], clsn1: str | None
         " Clsn2[1] = -10, -58, 10, -92",
     ]
     if clsn1:
-        lines.extend(["Clsn1: 1", f" Clsn1[0] = {clsn1}"])
+        for group, image, ticks in frames:
+            lines.extend(["Clsn1: 1", f" Clsn1[0] = {clsn1}"])
+            lines.append(f"{group},{image}, 0,0, {ticks}")
+        return "\n".join(lines)
+
     for group, image, ticks in frames:
         lines.append(f"{group},{image}, 0,0, {ticks}")
     return "\n".join(lines)
@@ -155,15 +159,15 @@ def write_air(path: Path) -> None:
         action(170, [(170, 0, 60)]),
         action(175, [(175, 0, 60)]),
         action(190, [(190, 0, 60)]),
-        action(200, seq(200, 2, 4), "8,-60, 58,-30"),
-        action(205, [(205, 0, 8)], "8,-60, 58,-30"),
-        action(210, [(210, 0, 10)], "8,-60, 62,-30"),
-        action(230, seq(230, 5, 4), "8,-72, 62,-12"),
-        action(240, seq(240, 5, 4), "8,-72, 62,-12"),
+        action(200, seq(200, 2, 4), "0,-64, 78,-28"),
+        action(205, [(205, 0, 8)], "0,-64, 82,-28"),
+        action(210, [(210, 0, 10)], "0,-66, 86,-26"),
+        action(230, seq(230, 5, 4), "-2,-94, 92,-8"),
+        action(240, seq(240, 5, 4), "-2,-96, 98,-8"),
         action(400, seq(400, 4, 5)),
-        action(410, [(410, 0, 10)], "8,-60, 62,-30"),
+        action(410, [(410, 0, 10)], "0,-66, 86,-26"),
         action(430, seq(430, 4, 5)),
-        action(440, seq(440, 5, 4), "8,-72, 62,-12"),
+        action(440, seq(440, 5, 4), "-2,-96, 98,-8"),
     ]
     for anim in [5000, 5001, 5002, 5010, 5011, 5012, 5020, 5021, 5022, 5030, 5035, 5040, 5050, 5060, 5070, 5080, 5100, 5101, 5110, 5300]:
         chunks.append(action(anim, seq(anim, 4, 5)))
