@@ -576,8 +576,8 @@ def write_sprmake2_def(path: Path) -> None:
         pcx_path = PCX_DIR / f"{spec.frame}.pcx"
         width, height = pcx_dimensions(pcx_path)
         if spec.frame.startswith("portrait_"):
-            x_axis = width // 2
-            y_axis = max(1, min(height - 1, round(height * spec.ground_ratio)))
+            x_axis = 0
+            y_axis = 0
         else:
             x_axis = GAMEPLAY_AXIS_X
             y_axis = GAMEPLAY_AXIS_Y

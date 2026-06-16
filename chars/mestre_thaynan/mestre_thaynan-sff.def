@@ -194,5 +194,5 @@ sprite.usepal = 1,1
 sprite.usepal = -1
 
 [Sprite]
-9000, 0, portrait_small.pcx, 12, 24
-9000, 1, portrait_big.pcx, 60, 134
+9000, 0, portrait_small.pcx, 0, 0
+9000, 1, portrait_big.pcx, 0, 0
