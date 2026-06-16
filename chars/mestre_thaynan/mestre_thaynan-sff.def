@@ -96,10 +96,12 @@ sprite.usepal = 1,1
 170, 0, idle_00.pcx, 130, 158
 175, 0, idle_00.pcx, 130, 158
 190, 0, idle_00.pcx, 130, 158
-200, 0, stand_lp_00.pcx, 130, 158
-200, 1, stand_lp_01.pcx, 130, 158
+200, 0, stand_lp_03.pcx, 130, 158
+200, 1, stand_lp_00.pcx, 130, 158
 205, 0, stand_lp_03.pcx, 130, 158
-210, 0, stand_lp_02.pcx, 130, 158
+205, 1, stand_lp_00.pcx, 130, 158
+210, 0, stand_lp_03.pcx, 130, 158
+210, 1, stand_lp_01.pcx, 130, 158
 230, 0, stand_hk_00.pcx, 130, 158
 230, 1, stand_hk_01.pcx, 130, 158
 230, 2, stand_hk_02.pcx, 130, 158
@@ -113,7 +115,8 @@ sprite.usepal = 1,1
 400, 0, idle_00.pcx, 130, 158
 400, 1, idle_01.pcx, 130, 158
 400, 2, idle_02.pcx, 130, 158
-410, 0, stand_lp_02.pcx, 130, 158
+410, 0, stand_lp_03.pcx, 130, 158
+410, 1, stand_lp_01.pcx, 130, 158
 430, 0, idle_00.pcx, 130, 158
 430, 1, idle_01.pcx, 130, 158
 430, 2, idle_02.pcx, 130, 158
