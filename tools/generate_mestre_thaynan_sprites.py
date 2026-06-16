@@ -34,6 +34,11 @@ GAMEPLAY_CANVAS_W = 260
 GAMEPLAY_CANVAS_H = 190
 GAMEPLAY_AXIS_X = 130
 GAMEPLAY_AXIS_Y = 158
+IDLE_SOURCE_MAP = {
+    "idle_00": "idle_01.png",
+    "idle_01": "idle_02.png",
+    "idle_02": "idle_03.png",
+}
 
 
 @dataclass(frozen=True)
@@ -50,10 +55,9 @@ class FrameSpec:
 # Explicit one-by-one frame crops from the 1024x1024 restart sheet.
 # These boxes avoid row titles and grid dividers.
 FRAMES = [
-    FrameSpec("idle_00", "Idle 0", (18, 40, 145, 252)),
-    FrameSpec("idle_01", "Idle 1", (214, 40, 337, 252)),
-    FrameSpec("idle_02", "Idle 2", (400, 40, 540, 252), x_offset=0, keep_largest=True),
-    FrameSpec("idle_03", "Idle 3", (604, 40, 748, 252), x_offset=0, keep_largest=True),
+    FrameSpec("idle_00", "Idle 0", (214, 40, 337, 252)),
+    FrameSpec("idle_01", "Idle 1", (400, 40, 540, 252), keep_largest=True),
+    FrameSpec("idle_02", "Idle 2", (604, 40, 748, 252), keep_largest=True),
     FrameSpec("walk_00", "Walk 0", (16, 294, 163, 508)),
     FrameSpec("walk_01", "Walk 1", (178, 294, 320, 508)),
     FrameSpec("walk_02", "Walk 2", (346, 294, 500, 508)),
@@ -215,7 +219,7 @@ def make_frame(sheet: Image.Image, spec: FrameSpec) -> Image.Image:
 
 
 def make_external_idle_frame(spec: FrameSpec) -> Image.Image:
-    source_path = IDLE_REFERENCE_DIR / f"{spec.name}.png"
+    source_path = IDLE_REFERENCE_DIR / IDLE_SOURCE_MAP[spec.name]
     if not source_path.exists():
         raise FileNotFoundError(source_path)
     source = Image.open(source_path).convert("RGB")
@@ -336,8 +340,8 @@ def make_preview(items: list[tuple[FrameSpec, Image.Image]]) -> Image.Image:
 def main() -> None:
     if not REFERENCE.exists():
         raise SystemExit(f"Missing reference sheet: {REFERENCE}")
-    for idx in range(4):
-        idle_path = IDLE_REFERENCE_DIR / f"idle_{idx:02d}.png"
+    for source_name in IDLE_SOURCE_MAP.values():
+        idle_path = IDLE_REFERENCE_DIR / source_name
         if not idle_path.exists():
             raise SystemExit(f"Missing idle reference frame: {idle_path}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
