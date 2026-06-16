@@ -17,8 +17,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 PCX_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites" / "pcx"
 CHAR_DIR = ROOT / "chars" / "mestre_thaynan"
-GAMEPLAY_AXIS_X = 110
-GAMEPLAY_AXIS_Y = 138
+GAMEPLAY_AXIS_X = 130
+GAMEPLAY_AXIS_Y = 158
 
 
 @dataclass(frozen=True)
