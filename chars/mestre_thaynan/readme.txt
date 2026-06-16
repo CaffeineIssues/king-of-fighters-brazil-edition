@@ -1,22 +1,22 @@
 Mestre Thaynan WIP Playable Test
 ================================
 
-This is a temporary playable placeholder built from the reference-extracted
-sprite frames in assets/mestre_thaynan/.
+This is a restart pass using only the simplified reference sheet.
 
 What works:
 - Selection via data/select.def
-- Idle, walk, jump, crouch using available frames
-- Four basic buttons: x/y punches, a/b kicks
-- QCF+P: Black Tiger Palm
-- DP+P: Crane Anti-Air
-- QCB+P: Prayer Guard counter stance
-- QCF+K: Sidewalk Step
-- QCB+K: Tiger Roar test attack
+- Loads using mestre_thaynan.sff and mestre_thaynan.air
+- Idle and walk frames from the sheet
+- Light punch on x
+- High kick on b
+- Standing/idle frames as required fallback and hurt placeholders
 
 Known limitations:
 - This is not a final balanced character.
-- The SFF is generated from compressed JPG-derived source art.
-- Many required animations reuse the closest available frame.
+- No special moves until matching sprite art exists.
 - No custom sounds are included yet.
 - Hitboxes are broad temporary boxes for local testing only.
+- Rebuild mestre_thaynan.sff with SprMake2 after sprite changes.
+
+To build the SFF with the official Windows tool:
+  sprmake2.exe chars\mestre_thaynan\mestre_thaynan-sff.def

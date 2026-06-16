@@ -3,9 +3,14 @@
 This folder contains the first reference-based sprite source pass for Mestre
 Thaynan.
 
-The extracted frames are also packaged into a temporary playable test character
-under `chars/mestre_thaynan/` and registered in `data/select.def`. This is a WIP
-test harness, not a finished character release.
+The extracted frames feed the official SprMake2 SFF build used by the temporary
+playable test character under `chars/mestre_thaynan/`. After changing these
+frames, rebuild `chars/mestre_thaynan/mestre_thaynan.sff` with SprMake2 before
+testing.
+
+Gameplay frames are extracted from the simplified restart sheet and scaled in
+MUGEN through the character CNS. Portrait frames keep their separate
+select-screen sizes.
 
 ## Contents
 
@@ -13,8 +18,8 @@ test harness, not a finished character release.
 - `sprites/pcx/*.pcx` - indexed 256-color frames for future SFF import.
 - `sprites/mestre_thaynan_sprite_sheet_preview.png` - labeled contact sheet.
 - `sprites/palette_strip.png` - current working palette.
-- `reference/black_tiger_maestro_reference.jpg` - provided visual reference
-  sheet.
+- `reference/mestre_thaynan_restart_reference.png` - current and only visual
+  reference sheet used by the extractor.
 - `tools/generate_mestre_thaynan_sprites.py` - reproducible reference-sheet
   extractor.
 
@@ -23,39 +28,45 @@ test harness, not a finished character release.
 The extracted pass includes:
 
 - Idle loop: `idle_00` through `idle_03`
-- Prayer guard: `prayer_guard`
-- Walk cycle: `walk_00` through `walk_03`
-- Low stance / crouch: `crouch`
-- Jump neutral: `jump_neutral`
-- Standing normals: `stand_lp`, `stand_hp`, `stand_lk`, `stand_hk`
-- Specials: `black_tiger_palm`, `crane_anti_air`, `prayer_counter`,
-  `sidewalk_step`, `tiger_roar_start`, `tiger_roar_charge`,
-  `tiger_roar_projectile`
-- Reactions and KO poses: `hit_high`, `hit_recoil`, `knockdown`, `ko`
-- Portrait references: `portrait_neutral`, `portrait_tiger_roar`
+- Walk forward cycle: `walk_00` through `walk_05`
+- Light punch: `stand_lp_00` through `stand_lp_03`
+- High kick: `stand_hk_00` through `stand_hk_04`
+- Required missing states, including hurt, reuse standing/idle frames in the
+  generated SFF/AIR mapping.
+- Portrait reference: `portrait_neutral`
+- MUGEN portrait slots: `portrait_small` for sprite `9000,0` at 25x25 and
+  `portrait_big` for sprite `9000,1` at 120x140
 - Costume/stance reference: `jacket_alt_idle`
 
 ## Visual Direction
 
-The design follows the provided Black Tiger Maestro sprite sheet:
+The gameplay design follows the cleaner sleeveless Black Tiger Maestro sheet:
 
 - Long center-parted dark gray hair.
 - Rectangular glasses.
 - Lean older martial artist build.
-- Navy track jacket with yellow sleeve stripes.
-- Light Black Tiger shirt.
+- Sleeveless black Black Tiger shirt for the current minimal set.
 - Loose dark pants and black shoes.
-- Tiger Roar special effect identity.
+- Special moves are intentionally absent until matching sprite art exists.
 
 ## MUGEN Import Notes
 
-The PCX files use palette index 0 as the transparent key color. They are
-reference-derived source frames, not final cropped production frames. Before
-packaging into SFF:
+The PCX files use palette index 0 as the transparent key color. The extractor
+removes edge-connected sheet background and detached crop artifacts from normal
+character frames. Green-screen spill is neutralized instead of aggressively
+deleted, preserving more character edge detail. A one-pixel transparent safety
+pad is then added so no visible border remains at frame edges. They are
+reference-derived source frames, not final cropped production frames.
+
+PCX export uses hard alpha thresholding before quantization so semi-transparent
+edge pixels do not get matted against the green transparency key. This prevents
+green outlines around the character in MUGEN.
+
+Before packaging into SFF:
 
 1. Hand-clean JPEG artifacts around outlines and effects.
 2. Normalize sprite axes and foot placement.
-3. Add in-betweens for idle, walk, normals, and specials.
+3. Add in-betweens for idle, walk, light punch, and high kick.
 4. Crop each frame consistently around the axis.
 5. Confirm shared palette behavior across all frames.
 6. Build the `.air` animation timings.
