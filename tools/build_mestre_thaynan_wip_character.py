@@ -304,7 +304,8 @@ sprpriority = 2
 
 [State 200, Hit]
 type = HitDef
-trigger1 = Time = [1,8]
+trigger1 = Time = 0
+persistent = 0
 attr = S, NA
 damage = 35, 4
 animtype = Light
@@ -338,7 +339,8 @@ sprpriority = 2
 
 [State 205, Hit]
 type = HitDef
-trigger1 = Time = [1,8]
+trigger1 = Time = 0
+persistent = 0
 attr = S, NA
 damage = 52, 6
 animtype = Medium
@@ -372,7 +374,8 @@ sprpriority = 2
 
 [State 210, Hit]
 type = HitDef
-trigger1 = Time = [1,10]
+trigger1 = Time = 0
+persistent = 0
 attr = S, NA
 damage = 72, 8
 animtype = Hard
@@ -406,7 +409,8 @@ sprpriority = 2
 
 [State 240, Hit]
 type = HitDef
-trigger1 = Time = [1,12]
+trigger1 = Time = 0
+persistent = 0
 attr = S, NA
 damage = 78, 8
 animtype = Hard
