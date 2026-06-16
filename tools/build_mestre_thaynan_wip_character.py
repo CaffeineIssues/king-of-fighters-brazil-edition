@@ -17,8 +17,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 PCX_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites" / "pcx"
 CHAR_DIR = ROOT / "chars" / "mestre_thaynan"
-GAMEPLAY_AXIS_X = 90
-GAMEPLAY_AXIS_Y = 118
+GAMEPLAY_AXIS_X = 110
+GAMEPLAY_AXIS_Y = 138
 
 
 @dataclass(frozen=True)
@@ -62,12 +62,14 @@ SPRITES = [
     SpriteSpec(170, 0, "idle_00"),
     SpriteSpec(175, 0, "idle_00"),
     SpriteSpec(190, 0, "idle_00"),
-    *specs_for(200, "stand_lp", 4),
-    *specs_for(210, "stand_lp", 4),
+    SpriteSpec(200, 0, "stand_lp_00"),
+    SpriteSpec(200, 1, "stand_lp_01"),
+    SpriteSpec(205, 0, "stand_lp_03"),
+    SpriteSpec(210, 0, "stand_lp_02"),
     *specs_for(230, "stand_hk", 5, 0.88),
     *specs_for(240, "stand_hk", 5, 0.88),
     *specs_for(400, "idle", 4),
-    *specs_for(410, "stand_lp", 4),
+    SpriteSpec(410, 0, "stand_lp_02"),
     *specs_for(430, "idle", 4),
     *specs_for(440, "stand_hk", 5, 0.88),
     *specs_for(5000, "idle", 4),
@@ -153,12 +155,13 @@ def write_air(path: Path) -> None:
         action(170, [(170, 0, 60)]),
         action(175, [(175, 0, 60)]),
         action(190, [(190, 0, 60)]),
-        action(200, seq(200, 4, 4), "8,-60, 58,-30"),
-        action(210, seq(210, 4, 4), "8,-60, 58,-30"),
+        action(200, seq(200, 2, 4), "8,-60, 58,-30"),
+        action(205, [(205, 0, 8)], "8,-60, 58,-30"),
+        action(210, [(210, 0, 10)], "8,-60, 62,-30"),
         action(230, seq(230, 5, 4), "8,-72, 62,-12"),
         action(240, seq(240, 5, 4), "8,-72, 62,-12"),
         action(400, seq(400, 4, 5)),
-        action(410, seq(410, 4, 4), "8,-60, 58,-30"),
+        action(410, [(410, 0, 10)], "8,-60, 62,-30"),
         action(430, seq(430, 4, 5)),
         action(440, seq(440, 5, 4), "8,-72, 62,-12"),
     ]
@@ -294,7 +297,7 @@ sprpriority = 2
 
 [State 200, Hit]
 type = HitDef
-trigger1 = Time = 4
+trigger1 = Time = [1,8]
 attr = S, NA
 damage = 35, 4
 animtype = Light
@@ -318,6 +321,74 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+[Statedef 205]
+type = S
+movetype = A
+physics = S
+anim = 205
+ctrl = 0
+sprpriority = 2
+
+[State 205, Hit]
+type = HitDef
+trigger1 = Time = [1,8]
+attr = S, NA
+damage = 52, 6
+animtype = Medium
+guardflag = MA
+hitflag = MAF
+priority = 3, Hit
+pausetime = 8,8
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 10
+ground.hittime = 13
+ground.velocity = -3
+air.velocity = -2,-4
+
+[State 205, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+sprpriority = 2
+
+[State 210, Hit]
+type = HitDef
+trigger1 = Time = [1,10]
+attr = S, NA
+damage = 72, 8
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 10,10
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 12
+ground.hittime = 16
+ground.velocity = -5
+air.velocity = -3,-5
+
+[State 210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
 [Statedef 240]
 type = S
 movetype = A
@@ -328,7 +399,7 @@ sprpriority = 2
 
 [State 240, Hit]
 type = HitDef
-trigger1 = Time = 5
+trigger1 = Time = [1,12]
 attr = S, NA
 damage = 78, 8
 animtype = Hard
@@ -359,6 +430,16 @@ CMD = """; Mestre Thaynan minimal WIP command file
 [Command]
 name = "x"
 command = x
+time = 1
+
+[Command]
+name = "y"
+command = y
+time = 1
+
+[Command]
+name = "z"
+command = z
 time = 1
 
 [Command]
@@ -397,6 +478,22 @@ time = 1
 type = ChangeState
 value = 200
 triggerall = command = "x"
+triggerall = statetype = S
+triggerall = ctrl
+trigger1 = 1
+
+[State -1, Medium Punch]
+type = ChangeState
+value = 205
+triggerall = command = "z"
+triggerall = statetype = S
+triggerall = ctrl
+trigger1 = 1
+
+[State -1, Heavy Punch]
+type = ChangeState
+value = 210
+triggerall = command = "y"
 triggerall = statetype = S
 triggerall = ctrl
 trigger1 = 1

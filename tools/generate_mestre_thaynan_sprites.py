@@ -29,10 +29,10 @@ GROUND = (96, 91, 78, 255)
 PCX_TRANSPARENT_RGB = (0, 255, 0)
 PCX_ALPHA_CUTOFF = 220
 GAMEPLAY_TARGET_HEIGHT = 82
-GAMEPLAY_CANVAS_W = 180
-GAMEPLAY_CANVAS_H = 128
-GAMEPLAY_AXIS_X = 90
-GAMEPLAY_AXIS_Y = 118
+GAMEPLAY_CANVAS_W = 220
+GAMEPLAY_CANVAS_H = 150
+GAMEPLAY_AXIS_X = 110
+GAMEPLAY_AXIS_Y = 138
 
 
 @dataclass(frozen=True)
@@ -51,8 +51,8 @@ class FrameSpec:
 FRAMES = [
     FrameSpec("idle_00", "Idle 0", (18, 40, 145, 252)),
     FrameSpec("idle_01", "Idle 1", (214, 40, 337, 252)),
-    FrameSpec("idle_02", "Idle 2", (400, 40, 540, 252), x_offset=12, keep_largest=True),
-    FrameSpec("idle_03", "Idle 3", (604, 40, 748, 252), x_offset=10, keep_largest=True),
+    FrameSpec("idle_02", "Idle 2", (400, 40, 540, 252), x_offset=0, keep_largest=True),
+    FrameSpec("idle_03", "Idle 3", (604, 40, 748, 252), x_offset=0, keep_largest=True),
     FrameSpec("walk_00", "Walk 0", (16, 294, 163, 508)),
     FrameSpec("walk_01", "Walk 1", (178, 294, 320, 508)),
     FrameSpec("walk_02", "Walk 2", (346, 294, 500, 508)),
@@ -63,11 +63,11 @@ FRAMES = [
     FrameSpec("stand_lp_01", "Light Punch 1", (266, 552, 502, 765)),
     FrameSpec("stand_lp_02", "Light Punch 2", (522, 552, 756, 765)),
     FrameSpec("stand_lp_03", "Light Punch 3", (778, 552, 1008, 765)),
-    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_04", "High Kick 4", (828, 812, 1008, 1020), keep_largest=True),
+    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.98),
+    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.98),
+    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.98),
+    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.98),
+    FrameSpec("stand_hk_04", "High Kick 4", (828, 812, 1008, 1020)),
     FrameSpec("portrait_neutral", "Portrait Source", (18, 40, 145, 252), normalize=False),
 ]
 

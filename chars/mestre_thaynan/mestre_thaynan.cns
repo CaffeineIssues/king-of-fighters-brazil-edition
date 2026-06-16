@@ -83,7 +83,7 @@ sprpriority = 2
 
 [State 200, Hit]
 type = HitDef
-trigger1 = Time = 4
+trigger1 = Time = [1,8]
 attr = S, NA
 damage = 35, 4
 animtype = Light
@@ -107,6 +107,74 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+[Statedef 205]
+type = S
+movetype = A
+physics = S
+anim = 205
+ctrl = 0
+sprpriority = 2
+
+[State 205, Hit]
+type = HitDef
+trigger1 = Time = [1,8]
+attr = S, NA
+damage = 52, 6
+animtype = Medium
+guardflag = MA
+hitflag = MAF
+priority = 3, Hit
+pausetime = 8,8
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 10
+ground.hittime = 13
+ground.velocity = -3
+air.velocity = -2,-4
+
+[State 205, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+sprpriority = 2
+
+[State 210, Hit]
+type = HitDef
+trigger1 = Time = [1,10]
+attr = S, NA
+damage = 72, 8
+animtype = Hard
+guardflag = MA
+hitflag = MAF
+priority = 4, Hit
+pausetime = 10,10
+sparkno = -1
+guard.sparkno = -1
+hitsound = -1
+guardsound = -1
+ground.type = High
+ground.slidetime = 12
+ground.hittime = 16
+ground.velocity = -5
+air.velocity = -3,-5
+
+[State 210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
 [Statedef 240]
 type = S
 movetype = A
@@ -117,7 +185,7 @@ sprpriority = 2
 
 [State 240, Hit]
 type = HitDef
-trigger1 = Time = 5
+trigger1 = Time = [1,12]
 attr = S, NA
 damage = 78, 8
 animtype = Hard
