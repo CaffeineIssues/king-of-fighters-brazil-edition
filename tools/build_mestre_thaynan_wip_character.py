@@ -522,6 +522,8 @@ What works:
 - Loads using mestre_thaynan.sff and mestre_thaynan.air
 - Idle and walk frames from the sheet
 - Light punch on x
+- Medium punch on z, using punch sprite 3
+- Heavy punch on y, using punch sprite 2
 - High kick on b
 - Standing/idle frames as required fallback and hurt placeholders
 
