@@ -6,6 +6,16 @@ command = x
 time = 1
 
 [Command]
+name = "y"
+command = y
+time = 1
+
+[Command]
+name = "z"
+command = z
+time = 1
+
+[Command]
 name = "b"
 command = b
 time = 1
@@ -41,6 +51,22 @@ time = 1
 type = ChangeState
 value = 200
 triggerall = command = "x"
+triggerall = statetype = S
+triggerall = ctrl
+trigger1 = 1
+
+[State -1, Medium Punch]
+type = ChangeState
+value = 205
+triggerall = command = "z"
+triggerall = statetype = S
+triggerall = ctrl
+trigger1 = 1
+
+[State -1, Heavy Punch]
+type = ChangeState
+value = 210
+triggerall = command = "y"
 triggerall = statetype = S
 triggerall = ctrl
 trigger1 = 1

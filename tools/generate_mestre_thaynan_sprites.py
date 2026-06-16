@@ -18,6 +18,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "mestre_thaynan_restart_reference.png"
+IDLE_REFERENCE_DIR = ROOT / "assets" / "mestre_thaynan" / "reference" / "idle"
+PORTRAIT_REFERENCE_DIR = ROOT / "assets" / "mestre_thaynan" / "reference" / "portraits"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -29,10 +31,15 @@ GROUND = (96, 91, 78, 255)
 PCX_TRANSPARENT_RGB = (0, 255, 0)
 PCX_ALPHA_CUTOFF = 220
 GAMEPLAY_TARGET_HEIGHT = 82
-GAMEPLAY_CANVAS_W = 180
-GAMEPLAY_CANVAS_H = 128
-GAMEPLAY_AXIS_X = 90
-GAMEPLAY_AXIS_Y = 118
+GAMEPLAY_CANVAS_W = 260
+GAMEPLAY_CANVAS_H = 190
+GAMEPLAY_AXIS_X = 130
+GAMEPLAY_AXIS_Y = 158
+IDLE_SOURCE_MAP = {
+    "idle_00": "idle_01.png",
+    "idle_01": "idle_02.png",
+    "idle_02": "idle_03.png",
+}
 
 
 @dataclass(frozen=True)
@@ -49,10 +56,9 @@ class FrameSpec:
 # Explicit one-by-one frame crops from the 1024x1024 restart sheet.
 # These boxes avoid row titles and grid dividers.
 FRAMES = [
-    FrameSpec("idle_00", "Idle 0", (18, 40, 145, 252)),
-    FrameSpec("idle_01", "Idle 1", (214, 40, 337, 252)),
-    FrameSpec("idle_02", "Idle 2", (400, 40, 540, 252), x_offset=12, keep_largest=True),
-    FrameSpec("idle_03", "Idle 3", (604, 40, 748, 252), x_offset=10, keep_largest=True),
+    FrameSpec("idle_00", "Idle 0", (214, 40, 337, 252)),
+    FrameSpec("idle_01", "Idle 1", (400, 40, 540, 252), keep_largest=True),
+    FrameSpec("idle_02", "Idle 2", (604, 40, 748, 252), keep_largest=True),
     FrameSpec("walk_00", "Walk 0", (16, 294, 163, 508)),
     FrameSpec("walk_01", "Walk 1", (178, 294, 320, 508)),
     FrameSpec("walk_02", "Walk 2", (346, 294, 500, 508)),
@@ -63,11 +69,11 @@ FRAMES = [
     FrameSpec("stand_lp_01", "Light Punch 1", (266, 552, 502, 765)),
     FrameSpec("stand_lp_02", "Light Punch 2", (522, 552, 756, 765)),
     FrameSpec("stand_lp_03", "Light Punch 3", (778, 552, 1008, 765)),
-    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.98, keep_largest=True),
-    FrameSpec("stand_hk_04", "High Kick 4", (828, 812, 1008, 1020), keep_largest=True),
+    FrameSpec("stand_hk_00", "High Kick 0", (18, 812, 196, 1020), 0.98),
+    FrameSpec("stand_hk_01", "High Kick 1", (214, 812, 390, 1020), 0.98),
+    FrameSpec("stand_hk_02", "High Kick 2", (414, 812, 584, 1020), 0.98),
+    FrameSpec("stand_hk_03", "High Kick 3", (618, 812, 778, 1020), 0.98),
+    FrameSpec("stand_hk_04", "High Kick 4", (828, 812, 1008, 1020)),
     FrameSpec("portrait_neutral", "Portrait Source", (18, 40, 145, 252), normalize=False),
 ]
 
@@ -213,22 +219,32 @@ def make_frame(sheet: Image.Image, spec: FrameSpec) -> Image.Image:
     return place_on_gameplay_canvas(final, spec)
 
 
-def make_portrait_small(portrait: Image.Image) -> Image.Image:
-    bbox = portrait.getbbox()
-    crop = portrait.crop(bbox) if bbox else portrait
-    crop = crop.crop((0, 0, crop.width, max(1, int(crop.height * 0.6))))
+def make_external_idle_frame(spec: FrameSpec) -> Image.Image:
+    source_path = IDLE_REFERENCE_DIR / IDLE_SOURCE_MAP[spec.name]
+    if not source_path.exists():
+        raise FileNotFoundError(source_path)
+    source = Image.open(source_path).convert("RGB")
+    idle_spec = FrameSpec(spec.name, spec.title, (0, 0, source.width, source.height), spec.ground_ratio, spec.normalize, False, spec.x_offset)
+    return make_frame(source, idle_spec)
+
+
+def make_portrait_small() -> Image.Image:
+    source = Image.open(PORTRAIT_REFERENCE_DIR / "portrait_small_source.png").convert("RGBA")
+    bbox = source.getbbox()
+    crop = source.crop(bbox) if bbox else source
     crop.thumbnail((23, 23), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (25, 25), TRANSPARENT)
     canvas.alpha_composite(crop, ((25 - crop.width) // 2, (25 - crop.height) // 2))
     return canvas
 
 
-def make_portrait_big(portrait: Image.Image) -> Image.Image:
-    bbox = portrait.getbbox()
-    crop = portrait.crop(bbox) if bbox else portrait
-    crop.thumbnail((108, 132), Image.Resampling.LANCZOS)
+def make_portrait_big() -> Image.Image:
+    source = Image.open(PORTRAIT_REFERENCE_DIR / "portrait_big_source.png").convert("RGBA")
+    # Fit the provided menu card into MUGEN's 9000,1 portrait canvas.
+    crop = source
+    crop.thumbnail((120, 140), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (120, 140), TRANSPARENT)
-    canvas.alpha_composite(crop, ((120 - crop.width) // 2, 140 - crop.height - 4))
+    canvas.alpha_composite(crop, ((120 - crop.width) // 2, (140 - crop.height) // 2))
     return canvas
 
 
@@ -326,6 +342,10 @@ def make_preview(items: list[tuple[FrameSpec, Image.Image]]) -> Image.Image:
 def main() -> None:
     if not REFERENCE.exists():
         raise SystemExit(f"Missing reference sheet: {REFERENCE}")
+    for source_name in IDLE_SOURCE_MAP.values():
+        idle_path = IDLE_REFERENCE_DIR / source_name
+        if not idle_path.exists():
+            raise SystemExit(f"Missing idle reference frame: {idle_path}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     PCX_DIR.mkdir(parents=True, exist_ok=True)
     for old in OUT_DIR.glob("*.png"):
@@ -337,21 +357,22 @@ def main() -> None:
     frames: list[tuple[FrameSpec, Image.Image]] = []
     frame_by_name: dict[str, Image.Image] = {}
     for spec in FRAMES:
-        frame = make_frame(sheet, spec)
+        frame = make_external_idle_frame(spec) if spec.name.startswith("idle_") else make_frame(sheet, spec)
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
         frame_by_name[spec.name] = frame
 
     for spec, frame in [
-        (FrameSpec("portrait_small", "Small Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_small(frame_by_name["portrait_neutral"])),
-        (FrameSpec("portrait_big", "Big Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_big(frame_by_name["portrait_neutral"])),
+        (FrameSpec("portrait_small", "Small Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_small()),
+        (FrameSpec("portrait_big", "Big Portrait", (0, 0, 0, 0), 0.96, False), make_portrait_big()),
     ]:
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
 
-    palette = quantized_palette([frame for _, frame in frames])
+    palette = quantized_palette([frame for spec, frame in frames if not spec.name.startswith("portrait_")])
     for spec, frame in frames:
-        save_indexed_pcx(frame, palette, spec.name)
+        frame_palette = quantized_palette([frame]) if spec.name.startswith("portrait_") else palette
+        save_indexed_pcx(frame, frame_palette, spec.name)
     make_palette_strip(palette).save(OUT_DIR / "palette_strip.png")
     make_preview(frames).save(OUT_DIR / "mestre_thaynan_sprite_sheet_preview.png")
 
