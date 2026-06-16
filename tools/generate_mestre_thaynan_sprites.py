@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "assets" / "mestre_thaynan" / "reference" / "mestre_thaynan_restart_reference.png"
+IDLE_REFERENCE_DIR = ROOT / "assets" / "mestre_thaynan" / "reference" / "idle"
 OUT_DIR = ROOT / "assets" / "mestre_thaynan" / "sprites"
 PCX_DIR = OUT_DIR / "pcx"
 
@@ -213,6 +214,15 @@ def make_frame(sheet: Image.Image, spec: FrameSpec) -> Image.Image:
     return place_on_gameplay_canvas(final, spec)
 
 
+def make_external_idle_frame(spec: FrameSpec) -> Image.Image:
+    source_path = IDLE_REFERENCE_DIR / f"{spec.name}.png"
+    if not source_path.exists():
+        raise FileNotFoundError(source_path)
+    source = Image.open(source_path).convert("RGB")
+    idle_spec = FrameSpec(spec.name, spec.title, (0, 0, source.width, source.height), spec.ground_ratio, spec.normalize, False, spec.x_offset)
+    return make_frame(source, idle_spec)
+
+
 def make_portrait_small(portrait: Image.Image) -> Image.Image:
     bbox = portrait.getbbox()
     crop = portrait.crop(bbox) if bbox else portrait
@@ -326,6 +336,10 @@ def make_preview(items: list[tuple[FrameSpec, Image.Image]]) -> Image.Image:
 def main() -> None:
     if not REFERENCE.exists():
         raise SystemExit(f"Missing reference sheet: {REFERENCE}")
+    for idx in range(4):
+        idle_path = IDLE_REFERENCE_DIR / f"idle_{idx:02d}.png"
+        if not idle_path.exists():
+            raise SystemExit(f"Missing idle reference frame: {idle_path}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     PCX_DIR.mkdir(parents=True, exist_ok=True)
     for old in OUT_DIR.glob("*.png"):
@@ -337,7 +351,7 @@ def main() -> None:
     frames: list[tuple[FrameSpec, Image.Image]] = []
     frame_by_name: dict[str, Image.Image] = {}
     for spec in FRAMES:
-        frame = make_frame(sheet, spec)
+        frame = make_external_idle_frame(spec) if spec.name.startswith("idle_") else make_frame(sheet, spec)
         frame.save(OUT_DIR / f"{spec.name}.png")
         frames.append((spec, frame))
         frame_by_name[spec.name] = frame
