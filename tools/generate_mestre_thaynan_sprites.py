@@ -240,9 +240,8 @@ def make_portrait_small() -> Image.Image:
 
 def make_portrait_big() -> Image.Image:
     source = Image.open(PORTRAIT_REFERENCE_DIR / "portrait_big_source.png").convert("RGBA")
-    # MUGEN's 9000,1 portrait slot is low-resolution. Use a clean bust crop
-    # instead of the full stat card so it reads like KFM's portrait in-menu.
-    crop = source.crop((250, 0, 930, 840))
+    # Fit the provided menu card into MUGEN's 9000,1 portrait canvas.
+    crop = source
     crop.thumbnail((120, 140), Image.Resampling.LANCZOS)
     canvas = Image.new("RGBA", (120, 140), TRANSPARENT)
     canvas.alpha_composite(crop, ((120 - crop.width) // 2, (140 - crop.height) // 2))
