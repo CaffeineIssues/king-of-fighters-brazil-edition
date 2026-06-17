@@ -41,7 +41,7 @@ screenleft = 15
 screenright = 15
 
 [StageInfo]
-zoffset = 218
+zoffset = 224
 autoturn = 1
 resetBG = 1
 localcoord = 320, 240

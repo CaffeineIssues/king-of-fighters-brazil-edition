@@ -1,0 +1,26 @@
+; Definition file for He-man do Sertao WIP
+
+[Info]
+name = "He-man do Sertao"
+displayname = "He-man do Sertão"
+versiondate = 06,17,2026
+mugenversion = 1.0
+author = "Brazilian Meme Fighters Team"
+pal.defaults = 1
+localcoord = 320,240
+
+[Files]
+cmd     = he_man_do_sertao.cmd
+cns     = he_man_do_sertao.cns
+st      = he_man_do_sertao.cns
+stcommon = common1.cns
+sprite  = he_man_do_sertao.sff
+anim    = he_man_do_sertao.air
+
+[Palette Keymap]
+x = 1
+y = 1
+z = 1
+a = 1
+b = 1
+c = 1
