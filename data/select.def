@@ -79,6 +79,7 @@ mestre_thaynan, stages/kfm.def, order=1
  ;Put extra stages here. They will be available in VS and Watch modes.
  ;For example, you can insert "stages/mybg.def".
 stages/stage0-720.def
+stages/praca_dos_eucaliptos_tiangua.def
 
 ;---------------------------------------------------------------------
 [Options]
