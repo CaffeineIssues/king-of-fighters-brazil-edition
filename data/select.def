@@ -73,6 +73,7 @@
 kfm, stages/kfm.def
 kfm720, stages/kfm.def
 mestre_thaynan, stages/kfm.def, order=1
+he_man_do_sertao, stages/kfm.def, order=1
 
 ;-----------------------
 [ExtraStages]

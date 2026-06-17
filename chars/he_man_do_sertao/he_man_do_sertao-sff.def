@@ -1,0 +1,120 @@
+[Output]
+filename = chars/he_man_do_sertao/he_man_do_sertao.sff
+
+[Option]
+input.dir = assets/he_man_do_sertao/sprites/pcx
+sprite.compress.5 = lz5
+sprite.compress.8 = rle8
+sprite.compress.24 = none
+sprite.decompressonload = 0
+sprite.detectduplicates = 0
+sprite.autocrop = 0
+pal.detectduplicates = 1
+pal.discardduplicates = 1
+pal.reverseact = 0
+pal.reversepng = 0
+
+[Pal]
+1,1, idle_00.pcx, 0,255
+
+[Option]
+sprite.usepal = 1,1
+
+[Sprite]
+0, 0, idle_00.pcx, 110, 158
+0, 1, idle_01.pcx, 110, 158
+5, 0, idle_00.pcx, 110, 158
+6, 0, idle_00.pcx, 110, 158
+10, 0, idle_00.pcx, 110, 158
+10, 1, idle_01.pcx, 110, 158
+11, 0, idle_00.pcx, 110, 158
+11, 1, idle_01.pcx, 110, 158
+12, 0, idle_00.pcx, 110, 158
+20, 0, idle_00.pcx, 110, 158
+20, 1, idle_01.pcx, 110, 158
+21, 0, idle_00.pcx, 110, 158
+21, 1, idle_01.pcx, 110, 158
+40, 0, idle_00.pcx, 110, 158
+41, 0, idle_00.pcx, 110, 158
+41, 1, idle_01.pcx, 110, 158
+42, 0, idle_00.pcx, 110, 158
+42, 1, idle_01.pcx, 110, 158
+43, 0, idle_00.pcx, 110, 158
+43, 1, idle_01.pcx, 110, 158
+44, 0, idle_00.pcx, 110, 158
+44, 1, idle_01.pcx, 110, 158
+47, 0, idle_00.pcx, 110, 158
+100, 0, idle_00.pcx, 110, 158
+100, 1, idle_01.pcx, 110, 158
+105, 0, idle_00.pcx, 110, 158
+120, 0, idle_00.pcx, 110, 158
+120, 1, idle_01.pcx, 110, 158
+130, 0, idle_00.pcx, 110, 158
+130, 1, idle_01.pcx, 110, 158
+131, 0, idle_00.pcx, 110, 158
+131, 1, idle_01.pcx, 110, 158
+132, 0, idle_00.pcx, 110, 158
+132, 1, idle_01.pcx, 110, 158
+140, 0, idle_00.pcx, 110, 158
+140, 1, idle_01.pcx, 110, 158
+150, 0, idle_00.pcx, 110, 158
+150, 1, idle_01.pcx, 110, 158
+151, 0, idle_00.pcx, 110, 158
+151, 1, idle_01.pcx, 110, 158
+152, 0, idle_00.pcx, 110, 158
+152, 1, idle_01.pcx, 110, 158
+154, 0, idle_00.pcx, 110, 158
+154, 1, idle_01.pcx, 110, 158
+170, 0, idle_00.pcx, 110, 158
+175, 0, idle_00.pcx, 110, 158
+190, 0, idle_00.pcx, 110, 158
+400, 0, idle_00.pcx, 110, 158
+400, 1, idle_01.pcx, 110, 158
+430, 0, idle_00.pcx, 110, 158
+430, 1, idle_01.pcx, 110, 158
+5000, 0, idle_00.pcx, 110, 158
+5000, 1, idle_01.pcx, 110, 158
+5001, 0, idle_00.pcx, 110, 158
+5001, 1, idle_01.pcx, 110, 158
+5002, 0, idle_00.pcx, 110, 158
+5002, 1, idle_01.pcx, 110, 158
+5010, 0, idle_00.pcx, 110, 158
+5010, 1, idle_01.pcx, 110, 158
+5011, 0, idle_00.pcx, 110, 158
+5011, 1, idle_01.pcx, 110, 158
+5012, 0, idle_00.pcx, 110, 158
+5012, 1, idle_01.pcx, 110, 158
+5020, 0, idle_00.pcx, 110, 158
+5020, 1, idle_01.pcx, 110, 158
+5021, 0, idle_00.pcx, 110, 158
+5021, 1, idle_01.pcx, 110, 158
+5022, 0, idle_00.pcx, 110, 158
+5022, 1, idle_01.pcx, 110, 158
+5030, 0, idle_00.pcx, 110, 158
+5030, 1, idle_01.pcx, 110, 158
+5035, 0, idle_00.pcx, 110, 158
+5035, 1, idle_01.pcx, 110, 158
+5040, 0, idle_00.pcx, 110, 158
+5040, 1, idle_01.pcx, 110, 158
+5050, 0, idle_00.pcx, 110, 158
+5050, 1, idle_01.pcx, 110, 158
+5060, 0, idle_00.pcx, 110, 158
+5060, 1, idle_01.pcx, 110, 158
+5070, 0, idle_00.pcx, 110, 158
+5070, 1, idle_01.pcx, 110, 158
+5080, 0, idle_00.pcx, 110, 158
+5080, 1, idle_01.pcx, 110, 158
+5100, 0, idle_00.pcx, 110, 158
+5100, 1, idle_01.pcx, 110, 158
+5101, 0, idle_00.pcx, 110, 158
+5101, 1, idle_01.pcx, 110, 158
+5110, 0, idle_00.pcx, 110, 158
+5110, 1, idle_01.pcx, 110, 158
+5120, 0, idle_00.pcx, 110, 158
+5150, 0, idle_00.pcx, 110, 158
+5200, 0, idle_00.pcx, 110, 158
+5210, 0, idle_00.pcx, 110, 158
+5300, 0, idle_00.pcx, 110, 158
+5300, 1, idle_01.pcx, 110, 158
+9000, 0, portrait_small.pcx, 0, 0
+9000, 1, portrait_big.pcx, 0, 0
