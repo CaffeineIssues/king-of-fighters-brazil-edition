@@ -219,6 +219,12 @@ down.bounce.offset = 0, 20
 down.bounce.yaccel = .4
 down.bounce.groundlevel = 12
 down.friction.threshold = .05
+
+[Statedef -2]
+
+[State -2, No-op]
+type = Null
+trigger1 = 1
 """
 
 
