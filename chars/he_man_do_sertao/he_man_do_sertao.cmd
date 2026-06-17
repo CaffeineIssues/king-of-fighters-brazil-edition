@@ -26,3 +26,7 @@ command = /$D
 time = 1
 
 [Statedef -1]
+
+[State -1, No-op]
+type = Null
+trigger1 = 1
