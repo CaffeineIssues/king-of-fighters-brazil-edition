@@ -1,10 +1,7 @@
-import "./style.css";
 const canvas = document.getElementById("game");
 
 if (!canvas) {
-  throw new Error(
-    'Canvas with id="game" was not found. Check your index.html.',
-  );
+  throw new Error('Canvas with id="game" was not found.');
 }
 
 const ctx = canvas.getContext("2d");
@@ -15,20 +12,73 @@ if (!ctx) {
 
 ctx.imageSmoothingEnabled = false;
 
-// Shared visual floor line.
-// Bigger number = characters lower.
-const GROUND_Y = canvas.height + 35;
+/*
+  Auto-load character frames.
+*/
+const spriteModules = import.meta.glob(
+  [
+    "/src/assets/chars/*/idle/*.{png,jpg,jpeg,webp}",
+    "/src/assets/chars/*/walk/*.{png,jpg,jpeg,webp}",
+  ],
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
-// Set true so you can see the line where feet should align.
-const DEBUG_FLOOR_LINE = true;
+/*
+  Auto-load stage frames.
+  Put your stage images in:
+  src/assets/stage/
+*/
+const stageModules = import.meta.glob(
+  "/src/assets/stages/*.{png,jpg,jpeg,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
-// Optional final manual tweaks.
-// Positive = move down.
-// Negative = move up.
-const P1_FOOT_OFFSET_Y = -45;
-const P2_FOOT_OFFSET_Y = -45;
+const SCALE = 2.5;
+const SPEED = 3.2;
+const START_FEET_Y = canvas.height - 20;
 
-const DISTANCE_FROM_CENTER = 140;
+/*
+  "cover" fills the whole canvas and may crop a little.
+  "stretch" forces the full image to fit the canvas.
+*/
+const STAGE_DRAW_MODE = "cover";
+
+const boundsCache = new WeakMap();
+const pressedKeys = new Set();
+
+let player1;
+let player2;
+let stage;
+
+function naturalSort(a, b) {
+  return a.localeCompare(b, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
+function getCharacterFrameUrls(characterName, animationName) {
+  const folder = `/src/assets/chars/${characterName}/${animationName}/`;
+
+  return Object.entries(spriteModules)
+    .filter(([path]) => path.startsWith(folder))
+    .sort(([pathA], [pathB]) => naturalSort(pathA, pathB))
+    .map(([, url]) => String(url));
+}
+
+function getStageFrameUrls() {
+  return Object.entries(stageModules)
+    .sort(([pathA], [pathB]) => naturalSort(pathA, pathB))
+    .map(([, url]) => String(url));
+}
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -44,231 +94,365 @@ function loadImage(src) {
   });
 }
 
-function getVisibleBounds(image) {
+async function loadAnimationFrames(characterName, animationName) {
+  const urls = getCharacterFrameUrls(characterName, animationName);
+
+  if (urls.length === 0) {
+    throw new Error(
+      `No frames found for ${characterName}/${animationName}. Check src/assets/chars/${characterName}/${animationName}`,
+    );
+  }
+
+  return Promise.all(urls.map(loadImage));
+}
+
+async function loadStage() {
+  const urls = getStageFrameUrls();
+
+  if (urls.length === 0) {
+    throw new Error("No stage images found. Check src/assets/stage/");
+  }
+
+  const frames = await Promise.all(urls.map(loadImage));
+
+  return {
+    frames,
+    frameIndex: 0,
+    frameTimer: 0,
+    animationSpeed: 10,
+  };
+}
+
+function drawImageCover(img, x, y, width, height) {
+  const imageRatio = img.width / img.height;
+  const targetRatio = width / height;
+
+  let sourceX = 0;
+  let sourceY = 0;
+  let sourceWidth = img.width;
+  let sourceHeight = img.height;
+
+  if (imageRatio > targetRatio) {
+    sourceWidth = img.height * targetRatio;
+    sourceX = (img.width - sourceWidth) / 2;
+  } else {
+    sourceHeight = img.width / targetRatio;
+    sourceY = (img.height - sourceHeight) / 2;
+  }
+
+  ctx.drawImage(
+    img,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    x,
+    y,
+    width,
+    height,
+  );
+}
+
+function updateStage() {
+  if (stage.frames.length <= 1) {
+    return;
+  }
+
+  stage.frameTimer++;
+
+  if (stage.frameTimer >= stage.animationSpeed) {
+    stage.frameTimer = 0;
+    stage.frameIndex = (stage.frameIndex + 1) % stage.frames.length;
+  }
+}
+
+function drawStage() {
+  const img = stage.frames[stage.frameIndex];
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (STAGE_DRAW_MODE === "stretch") {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  drawImageCover(img, 0, 0, canvas.width, canvas.height);
+}
+
+function getVisibleBounds(img) {
+  if (boundsCache.has(img)) {
+    return boundsCache.get(img);
+  }
+
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d");
 
-  tempCanvas.width = image.width;
-  tempCanvas.height = image.height;
+  tempCanvas.width = img.width;
+  tempCanvas.height = img.height;
 
-  tempCtx.drawImage(image, 0, 0);
+  tempCtx.drawImage(img, 0, 0);
 
-  const imageData = tempCtx.getImageData(0, 0, image.width, image.height);
-  const data = imageData.data;
+  const { data, width, height } = tempCtx.getImageData(
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height,
+  );
 
-  let minX = image.width;
-  let minY = image.height;
-  let maxX = -1;
-  let maxY = -1;
+  let minX = width;
+  let minY = height;
+  let maxX = 0;
+  let maxY = 0;
 
-  for (let y = 0; y < image.height; y++) {
-    for (let x = 0; x < image.width; x++) {
-      const index = (y * image.width + x) * 4;
-      const alpha = data[index + 3];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const alpha = data[(y * width + x) * 4 + 3];
 
-      if (alpha > 10) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
+      if (alpha > 0) {
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
       }
     }
   }
 
-  if (maxX === -1 || maxY === -1) {
-    return {
-      x: 0,
-      y: 0,
-      width: image.width,
-      height: image.height,
-    };
-  }
+  const bounds =
+    maxX < minX || maxY < minY
+      ? {
+          x: 0,
+          y: 0,
+          width: img.width,
+          height: img.height,
+        }
+      : {
+          x: minX,
+          y: minY,
+          width: maxX - minX + 1,
+          height: maxY - minY + 1,
+        };
 
+  boundsCache.set(img, bounds);
+
+  return bounds;
+}
+
+function createPlayer({ x, y, facing, idleFrames, walkFrames, keys }) {
   return {
-    x: minX,
-    y: minY,
-    width: maxX - minX + 1,
-    height: maxY - minY + 1,
+    x,
+    y,
+    facing,
+
+    idleFrames,
+    walkFrames,
+
+    keys,
+
+    currentAnimation: "idle",
+    previousAnimation: "idle",
+
+    frameIndex: 0,
+    frameTimer: 0,
+
+    speed: SPEED,
+    scale: SCALE,
   };
 }
 
-async function loadSpriteFrame(src) {
-  const image = await loadImage(src);
-  const bounds = getVisibleBounds(image);
+window.addEventListener("keydown", (event) => {
+  pressedKeys.add(event.code);
+  pressedKeys.add(event.key.toLowerCase());
 
-  return {
-    image,
-    bounds,
-    src,
-  };
+  const gameKeys = [
+    "KeyW",
+    "KeyA",
+    "KeyS",
+    "KeyD",
+    "Digit8",
+    "Digit4",
+    "Digit5",
+    "Digit6",
+    "Numpad8",
+    "Numpad4",
+    "Numpad5",
+    "Numpad6",
+  ];
+
+  if (gameKeys.includes(event.code)) {
+    event.preventDefault();
+  }
+});
+
+window.addEventListener("keyup", (event) => {
+  pressedKeys.delete(event.code);
+  pressedKeys.delete(event.key.toLowerCase());
+});
+
+function isDown(...keys) {
+  return keys.some((key) => pressedKeys.has(key));
 }
 
-async function loadFramesAuto(folder) {
-  const frames = [];
-  let index = 0;
+function updatePlayer(player) {
+  let dx = 0;
+  let dy = 0;
 
-  while (true) {
-    const src = `${folder}/${index}.png`;
+  if (isDown(...player.keys.left)) {
+    dx -= 1;
+  }
 
-    try {
-      const frame = await loadSpriteFrame(src);
-      frames.push(frame);
-      index++;
-    } catch {
-      break;
+  if (isDown(...player.keys.right)) {
+    dx += 1;
+  }
+
+  if (isDown(...player.keys.up)) {
+    dy -= 1;
+  }
+
+  if (isDown(...player.keys.down)) {
+    dy += 1;
+  }
+
+  const isMoving = dx !== 0 || dy !== 0;
+
+  if (isMoving) {
+    const length = Math.hypot(dx, dy);
+
+    dx /= length;
+    dy /= length;
+
+    player.x += dx * player.speed;
+    player.y += dy * player.speed;
+
+    player.currentAnimation = "walk";
+
+    if (dx < 0) {
+      player.facing = -1;
+    } else if (dx > 0) {
+      player.facing = 1;
     }
+  } else {
+    player.currentAnimation = "idle";
   }
 
-  if (frames.length === 0) {
-    throw new Error(`No sprites found in folder: ${folder}`);
+  if (player.currentAnimation !== player.previousAnimation) {
+    player.frameIndex = 0;
+    player.frameTimer = 0;
+    player.previousAnimation = player.currentAnimation;
   }
 
-  console.log(`Loaded ${frames.length} sprites from ${folder}`);
+  player.x = Math.max(60, Math.min(canvas.width - 60, player.x));
+  player.y = Math.max(120, Math.min(canvas.height - 20, player.y));
 
-  return frames;
-}
+  const frames =
+    player.currentAnimation === "walk" ? player.walkFrames : player.idleFrames;
 
-class Stage {
-  constructor({ image, x = 0, y = 0, scaleX = 1, scaleY = 1 }) {
-    this.image = image;
-    this.x = x;
-    this.y = y;
-    this.scaleX = scaleX;
-    this.scaleY = scaleY;
-  }
+  const animationSpeed = player.currentAnimation === "walk" ? 7 : 12;
 
-  draw(ctx) {
-    const w = this.image.width * this.scaleX;
-    const h = this.image.height * this.scaleY;
+  player.frameTimer++;
 
-    ctx.drawImage(this.image, this.x, this.y, w, h);
+  if (player.frameTimer >= animationSpeed) {
+    player.frameTimer = 0;
+    player.frameIndex = (player.frameIndex + 1) % frames.length;
   }
 }
 
-class Fighter {
-  constructor({
-    frames,
-    centerX,
-    groundY,
-    scale = 2,
-    flip = false,
-    frameDelay = 8,
-    footOffsetY = 0,
-  }) {
-    this.frames = frames;
-    this.centerX = centerX;
-    this.groundY = groundY;
-    this.scale = scale;
-    this.flip = flip;
-    this.frameDelay = frameDelay;
-    this.footOffsetY = footOffsetY;
+function drawPlayer(player) {
+  const frames =
+    player.currentAnimation === "walk" ? player.walkFrames : player.idleFrames;
 
-    this.frameIndex = 0;
-    this.tick = 0;
+  const img = frames[player.frameIndex % frames.length];
+  const bounds = getVisibleBounds(img);
+
+  const drawWidth = bounds.width * player.scale;
+  const drawHeight = bounds.height * player.scale;
+
+  const drawX = -drawWidth / 2;
+  const drawY = -drawHeight;
+
+  ctx.save();
+
+  ctx.translate(player.x, player.y);
+
+  if (player.facing === -1) {
+    ctx.scale(-1, 1);
   }
 
-  update() {
-    this.tick++;
+  ctx.drawImage(
+    img,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    drawX,
+    drawY,
+    drawWidth,
+    drawHeight,
+  );
 
-    if (this.tick >= this.frameDelay) {
-      this.tick = 0;
-      this.frameIndex = (this.frameIndex + 1) % this.frames.length;
-    }
-  }
-
-  draw(ctx) {
-    const frame = this.frames[this.frameIndex];
-    const img = frame.image;
-    const b = frame.bounds;
-
-    const w = b.width * this.scale;
-    const h = b.height * this.scale;
-
-    const drawX = this.centerX - w / 2;
-    const drawY = this.groundY - h + this.footOffsetY;
-
-    ctx.save();
-
-    if (this.flip) {
-      ctx.translate(drawX + w, drawY);
-      ctx.scale(-1, 1);
-
-      ctx.drawImage(img, b.x, b.y, b.width, b.height, 0, 0, w, h);
-    } else {
-      ctx.drawImage(img, b.x, b.y, b.width, b.height, drawX, drawY, w, h);
-    }
-
-    ctx.restore();
-  }
+  ctx.restore();
 }
 
-async function main() {
-  const stageImage = await loadImage("/stages/stage1/bg.png");
+function gameLoop() {
+  updateStage();
 
-  const char1Idle = await loadFramesAuto("/chars/char1/idle");
-  const char2Idle = await loadFramesAuto("/chars/char2/idle");
+  drawStage();
 
-  const stage = new Stage({
-    image: stageImage,
-    x: 0,
-    y: 0,
-    scaleX: canvas.width / stageImage.width,
-    scaleY: canvas.height / stageImage.height,
+  updatePlayer(player1);
+  updatePlayer(player2);
+
+  /*
+    Draw lower character last so overlap looks better.
+  */
+  const players = [player1, player2].sort((a, b) => a.y - b.y);
+
+  for (const player of players) {
+    drawPlayer(player);
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+async function startGame() {
+  stage = await loadStage();
+
+  const p1Idle = await loadAnimationFrames("p1", "idle");
+  const p1Walk = await loadAnimationFrames("p1", "walk");
+
+  const p2Idle = await loadAnimationFrames("p2", "idle");
+  const p2Walk = await loadAnimationFrames("p2", "walk");
+
+  player1 = createPlayer({
+    x: canvas.width / 2 - 260,
+    y: START_FEET_Y,
+    facing: 1,
+    idleFrames: p1Idle,
+    walkFrames: p1Walk,
+    keys: {
+      up: ["KeyW", "w"],
+      left: ["KeyA", "a"],
+      down: ["KeyS", "s"],
+      right: ["KeyD", "d"],
+    },
   });
 
-  const p1 = new Fighter({
-    frames: char1Idle,
-    centerX: canvas.width / 2 - DISTANCE_FROM_CENTER,
-    groundY: GROUND_Y,
-    scale: 2.5,
-    flip: false,
-    frameDelay: 8,
-    footOffsetY: P1_FOOT_OFFSET_Y,
+  player2 = createPlayer({
+    x: canvas.width / 2 + 260,
+    y: START_FEET_Y,
+    facing: -1,
+    idleFrames: p2Idle,
+    walkFrames: p2Walk,
+    keys: {
+      up: ["Digit8", "Numpad8", "8"],
+      left: ["Digit4", "Numpad4", "4"],
+      down: ["Digit5", "Numpad5", "5"],
+      right: ["Digit6", "Numpad6", "6"],
+    },
   });
 
-  const p2 = new Fighter({
-    frames: char2Idle,
-    centerX: canvas.width / 2 + DISTANCE_FROM_CENTER,
-    groundY: GROUND_Y,
-    scale: 2.5,
-    flip: true,
-    frameDelay: 8,
-    footOffsetY: P2_FOOT_OFFSET_Y,
-  });
-
-  function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    stage.draw(ctx);
-
-    p1.update();
-    p2.update();
-
-    p1.draw(ctx);
-    p2.draw(ctx);
-
-    if (DEBUG_FLOOR_LINE) {
-      ctx.fillStyle = "red";
-      ctx.fillRect(0, GROUND_Y, canvas.width, 2);
-    }
-
-    requestAnimationFrame(loop);
-  }
-
-  loop();
+  requestAnimationFrame(gameLoop);
 }
 
-main().catch((error) => {
+startGame().catch((error) => {
   console.error(error);
-
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "red";
-  ctx.font = "24px Arial";
-  ctx.fillText("Error loading game files", 40, 80);
-
-  ctx.fillStyle = "white";
-  ctx.font = "16px Arial";
-  ctx.fillText(error.message, 40, 120);
 });
