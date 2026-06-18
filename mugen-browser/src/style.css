@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #05050c;
+  overflow: hidden;
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+/* Full arcade image background */
+.arcade-stage {
+  position: relative;
+
+  /*
+    The generated image is wide.
+    This keeps the full image visible without stretching.
+  */
+  width: min(100vw, 150vh);
+  aspect-ratio: 3 / 2;
+
+  background-image: url("/fliperama-bg.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  image-rendering: pixelated;
+}
+
+/* The actual game screen area */
+.screen {
+  position: absolute;
+
+  /*
+    Slightly bigger screen.
+    We reduced left/top because width/height got bigger.
+  */
+  left: 26.2%;
+  top: 19%;
+  width: 47%;
+  height: 46.6%;
+
+  background: #000;
+  overflow: hidden;
+
+  border-radius: 10px 10px 12px 12px;
+
+  /*
+    Your positive rotateX looked closer, so keep it.
+    Scale makes it fill the generated image screen better.
+  */
+  transform: perspective(900px) rotateX(20deg) scale(1.015);
+  transform-origin: bottom center;
+
+  box-shadow:
+    inset 0 0 35px rgba(0, 0, 0, 0.95),
+    0 0 20px rgba(80, 40, 255, 0.25);
+}
+
+/* CRT scanlines / glass effect */
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.05),
+      rgba(0, 255, 255, 0.025),
+      rgba(0, 0, 255, 0.05)
+    );
+
+  background-size:
+    100% 4px,
+    6px 100%;
+}
+
+/* Game canvas */
+canvas#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  background: #000;
+  image-rendering: pixelated;
+}
+
+/* Optional: makes the game feel more CRT-like */
+canvas#game {
+  filter: contrast(1.08) saturate(1.1);
+}
+
+/* Mobile / small screens */
+@media (max-aspect-ratio: 3 / 2) {
+  .arcade-stage {
+    width: 100vw;
+    height: auto;
+  }
+}
+
+@media (min-aspect-ratio: 3 / 2) {
+  .arcade-stage {
+    height: 100vh;
+    width: auto;
+  }
+}
