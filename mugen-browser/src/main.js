@@ -14,6 +14,14 @@ ctx.imageSmoothingEnabled = false;
 
 /*
   Auto-load character frames.
+
+  Folder structure:
+
+  src/assets/chars/p1/idle/
+  src/assets/chars/p1/walk/
+
+  src/assets/chars/p2/idle/
+  src/assets/chars/p2/walk/
 */
 const spriteModules = import.meta.glob(
   [
@@ -29,8 +37,15 @@ const spriteModules = import.meta.glob(
 
 /*
   Auto-load stage frames.
-  Put your stage images in:
-  src/assets/stage/
+
+  Folder structure:
+
+  src/assets/stages/
+    0.png
+    1.png
+    2.png
+
+  If you only have one stage image, just put one image there.
 */
 const stageModules = import.meta.glob(
   "/src/assets/stages/*.{png,jpg,jpeg,webp}",
@@ -43,11 +58,16 @@ const stageModules = import.meta.glob(
 
 const SCALE = 2.5;
 const SPEED = 3.2;
+
+/*
+  Character ground position.
+  Bigger number = characters lower.
+*/
 const START_FEET_Y = canvas.height - 20;
 
 /*
-  "cover" fills the whole canvas and may crop a little.
-  "stretch" forces the full image to fit the canvas.
+  "cover" fills the canvas and may crop a little.
+  "stretch" forces the full stage image to fit the canvas.
 */
 const STAGE_DRAW_MODE = "cover";
 
@@ -99,7 +119,7 @@ async function loadAnimationFrames(characterName, animationName) {
 
   if (urls.length === 0) {
     throw new Error(
-      `No frames found for ${characterName}/${animationName}. Check src/assets/chars/${characterName}/${animationName}`,
+      `No frames found for ${characterName}/${animationName}. Check src/assets/chars/${characterName}/${animationName}/`,
     );
   }
 
@@ -110,7 +130,7 @@ async function loadStage() {
   const urls = getStageFrameUrls();
 
   if (urls.length === 0) {
-    throw new Error("No stage images found. Check src/assets/stage/");
+    throw new Error("No stage images found. Check src/assets/stages/");
   }
 
   const frames = await Promise.all(urls.map(loadImage));
@@ -295,8 +315,11 @@ function isDown(...keys) {
 
 function updatePlayer(player) {
   let dx = 0;
-  let dy = 0;
 
+  /*
+    Only horizontal movement.
+    W/S and 8/5 are ignored for movement.
+  */
   if (isDown(...player.keys.left)) {
     dx -= 1;
   }
@@ -305,25 +328,10 @@ function updatePlayer(player) {
     dx += 1;
   }
 
-  if (isDown(...player.keys.up)) {
-    dy -= 1;
-  }
-
-  if (isDown(...player.keys.down)) {
-    dy += 1;
-  }
-
-  const isMoving = dx !== 0 || dy !== 0;
+  const isMoving = dx !== 0;
 
   if (isMoving) {
-    const length = Math.hypot(dx, dy);
-
-    dx /= length;
-    dy /= length;
-
     player.x += dx * player.speed;
-    player.y += dy * player.speed;
-
     player.currentAnimation = "walk";
 
     if (dx < 0) {
@@ -341,8 +349,16 @@ function updatePlayer(player) {
     player.previousAnimation = player.currentAnimation;
   }
 
+  /*
+    Lock player to the ground axis.
+    This prevents walking up or down.
+  */
+  player.y = START_FEET_Y;
+
+  /*
+    Keep players inside the canvas horizontally.
+  */
   player.x = Math.max(60, Math.min(canvas.width - 60, player.x));
-  player.y = Math.max(120, Math.min(canvas.height - 20, player.y));
 
   const frames =
     player.currentAnimation === "walk" ? player.walkFrames : player.idleFrames;
@@ -395,14 +411,15 @@ function drawPlayer(player) {
 
 function gameLoop() {
   updateStage();
-
   drawStage();
 
   updatePlayer(player1);
   updatePlayer(player2);
 
   /*
-    Draw lower character last so overlap looks better.
+    Draw lower character last.
+    Since both are locked to same Y,
+    this mostly keeps the code ready for future jump/crouch.
   */
   const players = [player1, player2].sort((a, b) => a.y - b.y);
 
