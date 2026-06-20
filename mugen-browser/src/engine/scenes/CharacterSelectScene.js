@@ -115,7 +115,13 @@ export default class CharacterSelectScene {
     if (input.wasPressed("Enter")) {
       const selected = this.characters[this.selectedIndex];
 
-      this.game.gameContext.setPlayer1(selected);
+      const ctx = this.game.gameContext;
+
+      //ctx.setAvailableCharacters(this.characters.map((c) => c.id));
+      ctx.setAvailableCharacters(["he_man"]);
+      console.log(ctx.availableCharacters);
+
+      ctx.setPlayer1(selected.id);
 
       this.game.sceneManager.push(StageSelectScene);
     }

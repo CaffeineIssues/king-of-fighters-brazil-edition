@@ -5,54 +5,54 @@ export default class FightScene {
     this.ctx = game.ctx;
     this.canvas = game.canvas;
 
-    this.context = game.gameContext; // GameContext
+    this.context = game.gameContext;
+    this.characters = game.characters;
+
+    this.p1 = null;
+    this.p2 = null;
 
     this.stage = null;
-
-    this.player1 = null;
-    this.player2 = null;
-
     this.started = false;
   }
 
   async init() {
-    this.stage = this.context.stage;
+    const ctx = this.context;
 
-    const p1Idle = await loadAnimationFrames("p1", "idle");
-    const p1Walk = await loadAnimationFrames("p1", "walk");
+    // -----------------------------
+    // STAGE
+    // -----------------------------
+    this.stage = ctx.stage;
 
-    const p2Idle = await loadAnimationFrames("p2", "idle");
-    const p2Walk = await loadAnimationFrames("p2", "walk");
+    const groundY = this.stage?.groundY ?? 520;
 
-    const stageFromSelect = this.context.stage;
+    if (!ctx.player1 || !ctx.player2) {
+      throw new Error("FightScene: Missing player1 or player2 in GameContext");
+    }
 
-    this.player1 = createPlayer({
+    // -----------------------------
+    // CHARACTERS (IDs ONLY)
+    // -----------------------------
+    const p1Id = ctx.player1;
+    const p2Id = ctx.player2;
+
+    // -----------------------------
+    // LOAD CHARACTERS
+    // -----------------------------
+    this.p1 = await this.characters.loadCharacter(p1Id, {
       x: this.canvas.width / 2 - 260,
-      y: START_FEET_Y,
+      y: groundY,
       facing: 1,
-      idleFrames: p1Idle,
-      walkFrames: p1Walk,
-      keys: {
-        left: ["KeyA", "a"],
-        right: ["KeyD", "d"],
-      },
     });
 
-    this.player2 = createPlayer({
+    this.p2 = await this.characters.loadCharacter(p2Id, {
       x: this.canvas.width / 2 + 260,
-      y: START_FEET_Y,
+      y: groundY,
       facing: -1,
-      idleFrames: p2Idle,
-      walkFrames: p2Walk,
-      keys: {
-        left: ["Digit4", "Numpad4", "4"],
-        right: ["Digit6", "Numpad6", "6"],
-      },
     });
 
     this.started = true;
 
-    console.log("FightScene ready:", stageFromSelect);
+    console.log("FightScene ready:", p1Id, "vs", p2Id);
   }
 
   update() {
@@ -65,38 +65,66 @@ export default class FightScene {
 
     if (!this.started) return;
 
-    updateStage(this.stage);
+    // -----------------------------
+    // STAGE LOGIC (ONLY IF YOU WANT ANIMATION LATER)
+    // -----------------------------
+    // Currently NO updateStage needed (static stage system)
 
-    updatePlayer(this.player1, input);
-    updatePlayer(this.player2, input);
+    // -----------------------------
+    // PLAYER INPUT (TEMP SYSTEM)
+    // -----------------------------
+    if (input.isDown?.("KeyA")) this.p1.x -= this.p1.walkSpeed;
+    if (input.isDown?.("KeyD")) this.p1.x += this.p1.walkSpeed;
+
+    if (input.isDown?.("ArrowLeft")) this.p2.x -= this.p2.walkSpeed;
+    if (input.isDown?.("ArrowRight")) this.p2.x += this.p2.walkSpeed;
+
+    // -----------------------------
+    // CHARACTER ANIMATIONS
+    // -----------------------------
+    this.characters.update();
   }
 
-  draw(ctx) {
-    const W = this.canvas.width;
+  draw(renderCtx) {
     const H = this.canvas.height;
+    const W = this.canvas.width;
 
     if (!this.started) return;
 
-    drawStage(ctx, this.stage, this.canvas);
+    // -----------------------------
+    // CLEAR SCREEN
+    // -----------------------------
+    renderCtx.fillStyle = "#000";
+    renderCtx.fillRect(0, 0, W, H);
 
-    const players = [this.player1, this.player2].sort((a, b) => a.y - b.y);
+    // -----------------------------
+    // STAGE DRAW (STATIC IMAGE OR FRAMES)
+    // -----------------------------
+    if (this.stage?.preview) {
+      const img = this.stage.preview;
 
-    for (const p of players) {
-      drawPlayer(ctx, p);
+      if (img.complete) {
+        renderCtx.drawImage(img, 0, 0, W, H);
+      }
     }
 
-    /*
-      HUD minimal
-    */
-    ctx.fillStyle = "#FFD700";
-    ctx.font = "16px Arial";
-    ctx.fillText(
+    // -----------------------------
+    // CHARACTERS DRAW
+    // -----------------------------
+    this.characters.draw(renderCtx);
+
+    // -----------------------------
+    // HUD
+    // -----------------------------
+    renderCtx.fillStyle = "#FFD700";
+    renderCtx.font = "16px Arial";
+    renderCtx.fillText(
       `ROUND ${this.context.round} | MODE ${this.context.mode}`,
       20,
       30,
     );
 
-    ctx.fillStyle = "#888";
-    ctx.fillText("ESC = back", 20, H - 20);
+    renderCtx.fillStyle = "#888";
+    renderCtx.fillText("ESC = back", 20, H - 20);
   }
 }

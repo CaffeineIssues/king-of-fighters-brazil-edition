@@ -10,4 +10,6 @@ export default {
   music: "praia.mp3",
 
   description: "Ponto de treinamento dos alunos do clã Thaynan.",
+
+  groundY: 520,
 };

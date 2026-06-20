@@ -65,11 +65,23 @@ export default class StageSelectScene {
     if (input.wasPressed("Enter")) {
       const selected = this.stages[this.selectedIndex];
 
-      console.log("Stage Selected:", selected);
+      const ctx = this.game.gameContext;
 
-      this.game.selectedStage = selected;
+      ctx.setStage(selected);
 
-      // ✅ FIXED: pass class, NOT instance
+      // P1 already selected
+      const p1Id = ctx.player1;
+
+      if (!p1Id) {
+        console.warn("No player1 selected!");
+        return;
+      }
+
+      // P2 random excluding P1
+      const p2Id = ctx.getRandomCharacter([p1Id]);
+
+      ctx.setPlayer2(p2Id);
+
       this.game.sceneManager.push(FightScene);
     }
   }
@@ -88,9 +100,9 @@ export default class StageSelectScene {
     // HEADER
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 32px Arial";
-    ctx.fillText("STAGE SELECT", 30, 20);
+    ctx.fillText("STAGE SELECT", 30, 40);
 
-    // PREVIEW
+    // PREVIEW BOX
     const previewX = 60;
     const previewY = 80;
     const previewW = 840;
@@ -110,18 +122,18 @@ export default class StageSelectScene {
     // INFO
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 26px Arial";
-    ctx.fillText(stage.name, 60, 430);
+    ctx.fillText(stage.name, 60, 450);
 
     ctx.font = "18px Arial";
-    ctx.fillText(`${stage.city} - ${stage.state}`, 60, 465);
+    ctx.fillText(`${stage.city} - ${stage.state}`, 60, 480);
 
     ctx.fillStyle = "#AAAAAA";
-    ctx.fillText(stage.description || "", 60, 495);
+    ctx.fillText(stage.description || "", 60, 510);
 
     // SELECTOR
     ctx.fillStyle = "#FFD700";
     ctx.font = "18px Arial";
-    ctx.fillText(`${this.selectedIndex + 1}/${this.stages.length}`, 860, 430);
+    ctx.fillText(`${this.selectedIndex + 1}/${this.stages.length}`, 860, 450);
 
     // FOOTER
     ctx.fillStyle = "#888";

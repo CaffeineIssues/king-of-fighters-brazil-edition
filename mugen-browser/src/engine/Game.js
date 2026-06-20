@@ -1,8 +1,9 @@
 import SceneManager from "./managers/SceneManager";
 import InputSystem from "./systems/InputSystem";
-
+import AssetManager from "./managers/AssetManager";
 import MenuScene from "./scenes/MenuScene";
 import GameContext from "./contexts/GameContext";
+import CharacterManager from "./managers/CharacterManager";
 
 export default class Game {
   constructor(canvas) {
@@ -25,6 +26,10 @@ export default class Game {
     this.sceneManager = new SceneManager(this);
 
     this.inputSystem = new InputSystem();
+
+    this.assets = new AssetManager();
+
+    this.characters = new CharacterManager(this);
 
     this.lastTime = 0;
 
