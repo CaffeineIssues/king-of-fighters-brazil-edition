@@ -5,6 +5,7 @@ export default class SceneManager {
   }
 
   async push(SceneClass) {
+    // Allow only constructor functions (classes)
     const scene = new SceneClass(this.game);
 
     this.stack.push(scene);

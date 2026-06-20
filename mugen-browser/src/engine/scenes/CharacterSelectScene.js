@@ -1,9 +1,25 @@
 import brazilMap from "../../assets/ui/brazil-map.png";
+import StageSelectScene from "./StageSelectScene";
 
 const characterDefinitions = import.meta.glob(
   "/src/assets/chars/*/definition.js",
   {
     eager: true,
+    import: "default",
+  },
+);
+
+const portraitModules = import.meta.glob("/src/assets/chars/*/portrait.*", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+const portraitBigModules = import.meta.glob(
+  "/src/assets/chars/*/portrait_big.*",
+  {
+    eager: true,
+    query: "?url",
     import: "default",
   },
 );
@@ -18,15 +34,48 @@ export default class CharacterSelectScene {
     this.columns = 4;
     this.selectedIndex = 0;
 
-    this.characters = Object.values(characterDefinitions).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    this.characters = Object.values(characterDefinitions).map((character) => {
+      const portraitEntry = Object.entries(portraitModules).find(([path]) =>
+        path.includes(`/chars/${character.id}/portrait.`),
+      );
+
+      const portraitBigEntry = Object.entries(portraitBigModules).find(
+        ([path]) => path.includes(`/chars/${character.id}/portrait_big.`),
+      );
+
+      const portraitSrc = portraitEntry?.[1] ?? null;
+
+      const portraitBigSrc = portraitBigEntry?.[1] ?? null;
+
+      const portrait = portraitSrc ? new Image() : null;
+
+      const portraitBig = portraitBigSrc ? new Image() : null;
+
+      if (portrait) {
+        portrait.src = portraitSrc;
+      }
+
+      if (portraitBig) {
+        portraitBig.src = portraitBigSrc;
+      }
+
+      return {
+        ...character,
+
+        portrait,
+        portraitBig,
+      };
+    });
+
+    if (this.characters.length === 0) {
+      throw new Error("No characters found in assets/chars");
+    }
   }
 
   update() {
     const input = this.game.inputSystem;
 
-    if (input.wasPressed("F1")) {
+    if (input.wasPressed("Escape") || input.wasPressed("F1")) {
       this.game.sceneManager.pop();
       return;
     }
@@ -64,7 +113,11 @@ export default class CharacterSelectScene {
     }
 
     if (input.wasPressed("Enter")) {
-      console.log("Selected:", this.characters[this.selectedIndex]);
+      const selected = this.characters[this.selectedIndex];
+
+      this.game.gameContext.setPlayer1(selected);
+
+      this.game.sceneManager.push(StageSelectScene);
     }
   }
 
@@ -76,11 +129,11 @@ export default class CharacterSelectScene {
 
     const selected = this.characters[this.selectedIndex];
 
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-
     ctx.fillStyle = "#050505";
     ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
 
     const LEFT = 40;
 
@@ -124,10 +177,15 @@ export default class CharacterSelectScene {
 
       ctx.fillRect(x + 2, y + 2, portraitSize - 4, portraitSize - 4);
 
-      ctx.fillStyle = "#fff";
-      ctx.font = "10px Arial";
-
-      ctx.fillText(String(index + 1), x + 20, y + 18);
+      if (character.portrait && character.portrait.complete) {
+        ctx.drawImage(
+          character.portrait,
+          x + 2,
+          y + 2,
+          portraitSize - 4,
+          portraitSize - 4,
+        );
+      }
     });
 
     /*
@@ -145,13 +203,6 @@ export default class CharacterSelectScene {
     }
 
     /*
-     * DEBUG BORDER
-     */
-
-    ctx.strokeStyle = "#333";
-    ctx.strokeRect(mapX, mapY, mapWidth, mapHeight);
-
-    /*
      * PIN
      */
 
@@ -165,47 +216,67 @@ export default class CharacterSelectScene {
 
     ctx.arc(pinX, pinY, pulse, 0, Math.PI * 2);
 
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#FF0000";
     ctx.fill();
 
     /*
-     * INFO PANEL
+     * BIG PORTRAIT
      */
 
-    const infoX = LEFT;
-    const infoY = 330;
+    const portraitX = 730;
+    const portraitY = 320;
 
-    const infoWidth = W - LEFT * 2;
+    const portraitWidth = 180;
+    const portraitHeight = 180;
 
-    const infoHeight = 150;
+    ctx.fillStyle = "#222";
+
+    ctx.fillRect(portraitX, portraitY, portraitWidth, portraitHeight);
+
+    ctx.strokeStyle = "#FFD700";
+
+    ctx.strokeRect(portraitX, portraitY, portraitWidth, portraitHeight);
+
+    const image = selected.portraitBig || selected.portrait;
+
+    if (image && image.complete) {
+      ctx.drawImage(image, portraitX, portraitY, portraitWidth, portraitHeight);
+    }
+
+    /*
+     * INFO
+     */
 
     ctx.fillStyle = "#111";
 
-    ctx.fillRect(infoX, infoY, infoWidth, infoHeight);
+    ctx.fillRect(40, 330, 650, 150);
 
     ctx.strokeStyle = "#666";
 
-    ctx.strokeRect(infoX, infoY, infoWidth, infoHeight);
+    ctx.strokeRect(40, 330, 650, 150);
 
     ctx.fillStyle = "#FFD700";
+
     ctx.font = "bold 22px Arial";
 
-    ctx.fillText(selected.name, infoX + 15, infoY + 15);
+    ctx.fillText(selected.name, 55, 345);
 
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#FFFFFF";
+
     ctx.font = "16px Arial";
 
-    ctx.fillText(`Cidade: ${selected.city}`, infoX + 15, infoY + 55);
+    ctx.fillText(`Cidade: ${selected.city}`, 55, 385);
 
-    ctx.fillText(`Estado: ${selected.state}`, infoX + 15, infoY + 80);
+    ctx.fillText(`Estado: ${selected.state}`, 55, 410);
 
-    ctx.fillText(`Estilo: ${selected.style}`, infoX + 15, infoY + 105);
+    ctx.fillText(`Estilo: ${selected.style}`, 55, 435);
 
     /*
      * FOOTER
      */
 
     ctx.fillStyle = "#999";
+
     ctx.font = "13px Arial";
 
     ctx.fillText("ARROWS SELECT | ENTER CONFIRM | ESC BACK", LEFT, H - 20);

@@ -2,6 +2,7 @@ import SceneManager from "./managers/SceneManager";
 import InputSystem from "./systems/InputSystem";
 
 import MenuScene from "./scenes/MenuScene";
+import GameContext from "./contexts/GameContext";
 
 export default class Game {
   constructor(canvas) {
@@ -12,6 +13,8 @@ export default class Game {
     this.canvas = canvas;
 
     this.ctx = canvas.getContext("2d");
+
+    this.gameContext = new GameContext();
 
     if (!this.ctx) {
       throw new Error("Could not get 2D context.");
