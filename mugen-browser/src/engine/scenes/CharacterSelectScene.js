@@ -118,7 +118,7 @@ export default class CharacterSelectScene {
       const ctx = this.game.gameContext;
 
       //ctx.setAvailableCharacters(this.characters.map((c) => c.id));
-      ctx.setAvailableCharacters(["he_man"]);
+      ctx.setAvailableCharacters(["he_man", "mestre_thaynan"]);
       console.log(ctx.availableCharacters);
 
       ctx.setPlayer1(selected.id);
