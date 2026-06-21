@@ -13,6 +13,13 @@ export default class FightScene {
 
     this.stage = null;
     this.started = false;
+
+    // -----------------------------
+    // HUD STATE
+    // -----------------------------
+    this.roundTime = 99;
+    this.timer = 0;
+    this.lastTime = null;
   }
 
   async init() {
@@ -53,37 +60,57 @@ export default class FightScene {
 
     if (!this.started) return;
 
-    // =========================================================
+    // -----------------------------
+    // TIMER UPDATE
+    // -----------------------------
+    const now = performance.now();
+
+    if (this.lastTime === null) this.lastTime = now;
+
+    this.timer += now - this.lastTime;
+    this.lastTime = now;
+
+    if (this.timer >= 1000) {
+      this.timer = 0;
+
+      if (this.roundTime > 0) {
+        this.roundTime--;
+      }
+    }
+
+    // -----------------------------
     // PLAYER 1
-    // =========================================================
+    // -----------------------------
     let p1Moving = false;
 
-    const p1CanAct =
+    if (
       this.p1.currentAnimation === "idle" ||
-      this.p1.currentAnimation === "walk";
-
-    if (p1CanAct) {
-      if (input.isPressed("KeyA")) {
+      this.p1.currentAnimation === "walk"
+    ) {
+      if (input.isPressed?.("KeyA")) {
         this.p1.x -= this.p1.walkSpeed;
         this.p1.facing = -1;
         p1Moving = true;
       }
 
-      if (input.isPressed("KeyD")) {
+      if (input.isPressed?.("KeyD")) {
         this.p1.x += this.p1.walkSpeed;
         this.p1.facing = 1;
         p1Moving = true;
       }
 
-      if (input.wasPressed("KeyJ") && this.p1.animations.light_punch) {
+      if (input.wasPressed?.("KeyJ") && this.p1.animations.light_punch) {
         this.p1.currentAnimation = "light_punch";
         this.p1.frameIndex = 0;
         this.p1.frameTimer = 0;
-      } else if (input.wasPressed("KeyK") && this.p1.animations.medium_punch) {
+      } else if (
+        input.wasPressed?.("KeyK") &&
+        this.p1.animations.medium_punch
+      ) {
         this.p1.currentAnimation = "medium_punch";
         this.p1.frameIndex = 0;
         this.p1.frameTimer = 0;
-      } else if (input.wasPressed("KeyL") && this.p1.animations.heavy_punch) {
+      } else if (input.wasPressed?.("KeyL") && this.p1.animations.heavy_punch) {
         this.p1.currentAnimation = "heavy_punch";
         this.p1.frameIndex = 0;
         this.p1.frameTimer = 0;
@@ -92,41 +119,40 @@ export default class FightScene {
       }
     }
 
-    // =========================================================
+    // -----------------------------
     // PLAYER 2
-    // =========================================================
+    // -----------------------------
     let p2Moving = false;
 
-    const p2CanAct =
+    if (
       this.p2.currentAnimation === "idle" ||
-      this.p2.currentAnimation === "walk";
-
-    if (p2CanAct) {
-      if (input.isPressed("ArrowLeft")) {
+      this.p2.currentAnimation === "walk"
+    ) {
+      if (input.isPressed?.("ArrowLeft")) {
         this.p2.x -= this.p2.walkSpeed;
         this.p2.facing = -1;
         p2Moving = true;
       }
 
-      if (input.isPressed("ArrowRight")) {
+      if (input.isPressed?.("ArrowRight")) {
         this.p2.x += this.p2.walkSpeed;
         this.p2.facing = 1;
         p2Moving = true;
       }
 
-      if (input.wasPressed("Numpad1") && this.p2.animations.light_punch) {
+      if (input.wasPressed?.("Numpad1") && this.p2.animations.light_punch) {
         this.p2.currentAnimation = "light_punch";
         this.p2.frameIndex = 0;
         this.p2.frameTimer = 0;
       } else if (
-        input.wasPressed("Numpad2") &&
+        input.wasPressed?.("Numpad2") &&
         this.p2.animations.medium_punch
       ) {
         this.p2.currentAnimation = "medium_punch";
         this.p2.frameIndex = 0;
         this.p2.frameTimer = 0;
       } else if (
-        input.wasPressed("Numpad3") &&
+        input.wasPressed?.("Numpad3") &&
         this.p2.animations.heavy_punch
       ) {
         this.p2.currentAnimation = "heavy_punch";
@@ -137,19 +163,15 @@ export default class FightScene {
       }
     }
 
-    // =========================================================
-    // KEEP INSIDE SCREEN
-    // =========================================================
-    const limitX = (p) => {
-      p.x = Math.max(60, Math.min(this.canvas.width - 60, p.x));
-    };
+    // -----------------------------
+    // SCREEN LIMITS
+    // -----------------------------
+    this.p1.x = Math.max(60, Math.min(this.canvas.width - 60, this.p1.x));
+    this.p2.x = Math.max(60, Math.min(this.canvas.width - 60, this.p2.x));
 
-    limitX(this.p1);
-    limitX(this.p2);
-
-    // =========================================================
-    // UPDATE ANIMATIONS
-    // =========================================================
+    // -----------------------------
+    // UPDATE CHARACTERS
+    // -----------------------------
     this.characters.update();
   }
 
@@ -159,29 +181,71 @@ export default class FightScene {
 
     if (!this.started) return;
 
-    // background
+    // -----------------------------
+    // CLEAR
+    // -----------------------------
     renderCtx.fillStyle = "#000";
     renderCtx.fillRect(0, 0, W, H);
 
-    // stage
+    // -----------------------------
+    // STAGE
+    // -----------------------------
     if (this.stage?.preview?.complete) {
       renderCtx.drawImage(this.stage.preview, 0, 0, W, H);
     }
 
-    // characters
+    // -----------------------------
+    // CHARACTERS
+    // -----------------------------
     this.characters.draw(renderCtx);
 
+    // -----------------------------
     // HUD
-    renderCtx.fillStyle = "#FFD700";
-    renderCtx.font = "16px Arial";
-    renderCtx.fillText(
-      `ROUND ${this.context.round} | MODE ${this.context.mode}`,
-      20,
-      30,
-    );
+    // -----------------------------
+    this.drawHUD(renderCtx);
+  }
 
-    renderCtx.fillStyle = "#888";
-    renderCtx.fillText("P1: A D J K L", 20, H - 40);
-    renderCtx.fillText("P2: ← → NUM1 NUM2 NUM3", 20, H - 20);
+  drawHUD(ctx) {
+    const W = this.canvas.width;
+
+    const p1 = this.p1;
+    const p2 = this.p2;
+
+    // -----------------------------
+    // BACK BAR
+    // -----------------------------
+    ctx.fillStyle = "#222";
+    ctx.fillRect(50, 20, 300, 18);
+    ctx.fillRect(W - 350, 20, 300, 18);
+
+    // -----------------------------
+    // LIFE BAR
+    // -----------------------------
+    const p1Life = (p1.health / p1.maxHealth) * 300;
+    const p2Life = (p2.health / p2.maxHealth) * 300;
+
+    ctx.fillStyle = "#00ff66";
+    ctx.fillRect(50, 20, p1Life, 18);
+
+    ctx.fillStyle = "#00ff66";
+    ctx.fillRect(W - 350, 20, p2Life, 18);
+
+    // -----------------------------
+    // TIMER
+    // -----------------------------
+    ctx.fillStyle = "#fff";
+    ctx.font = "22px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(this.roundTime, W / 2, 35);
+
+    // -----------------------------
+    // NAMES
+    // -----------------------------
+    ctx.font = "14px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText(p1.name, 50, 60);
+
+    ctx.textAlign = "right";
+    ctx.fillText(p2.name, W - 50, 60);
   }
 }
