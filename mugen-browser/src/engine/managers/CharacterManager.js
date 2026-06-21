@@ -48,7 +48,6 @@ export default class CharacterManager {
       facing: options.facing ?? 1,
 
       health: definition.health ?? 1000,
-
       maxHealth: definition.health ?? 1000,
 
       power: 0,
@@ -56,14 +55,14 @@ export default class CharacterManager {
       state: "idle",
 
       currentAnimation: "idle",
-
       previousAnimation: "idle",
 
       frameIndex: 0,
       frameTimer: 0,
 
-      scale: definition.scale ?? 2.5,
+      attacking: false,
 
+      scale: definition.scale ?? 2.5,
       walkSpeed: definition.walkSpeed ?? 3.2,
 
       animations: {},
@@ -84,17 +83,13 @@ export default class CharacterManager {
     const groups = {};
 
     for (const [path, url] of Object.entries(spriteModules)) {
-      if (!path.startsWith(root)) {
-        continue;
-      }
+      if (!path.startsWith(root)) continue;
 
       const relative = path.replace(root, "");
 
       const parts = relative.split("/");
 
-      if (parts.length < 2) {
-        continue;
-      }
+      if (parts.length < 2) continue;
 
       const animation = parts[0];
 
@@ -145,19 +140,97 @@ export default class CharacterManager {
     if (character.currentAnimation !== character.previousAnimation) {
       character.frameIndex = 0;
       character.frameTimer = 0;
-
       character.previousAnimation = character.currentAnimation;
     }
 
     character.frameTimer++;
 
-    const animationSpeed = 8;
+    let animationSpeed = 8;
+
+    switch (character.currentAnimation) {
+      case "walk":
+        animationSpeed = 6;
+        break;
+
+      case "light_punch":
+        animationSpeed = 4;
+        break;
+
+      case "medium_punch":
+        animationSpeed = 4;
+        break;
+
+      case "heavy_punch":
+        animationSpeed = 5;
+        break;
+
+      default:
+        animationSpeed = 10;
+    }
 
     if (character.frameTimer >= animationSpeed) {
       character.frameTimer = 0;
 
-      character.frameIndex = (character.frameIndex + 1) % frames.length;
+      character.frameIndex++;
+
+      if (character.frameIndex >= frames.length) {
+        const attackAnimations = ["light_punch", "medium_punch", "heavy_punch"];
+
+        if (attackAnimations.includes(character.currentAnimation)) {
+          character.currentAnimation = "idle";
+          character.attacking = false;
+          character.frameIndex = 0;
+        } else {
+          character.frameIndex = 0;
+        }
+      }
     }
+  }
+
+  playAnimation(character, animation) {
+    if (!character.animations[animation]) {
+      return false;
+    }
+
+    if (character.currentAnimation === animation) {
+      return true;
+    }
+
+    character.currentAnimation = animation;
+    character.frameIndex = 0;
+    character.frameTimer = 0;
+
+    return true;
+  }
+
+  lightPunch(character) {
+    if (character.attacking) return;
+
+    if (!character.animations.light_punch) return;
+
+    character.attacking = true;
+
+    this.playAnimation(character, "light_punch");
+  }
+
+  mediumPunch(character) {
+    if (character.attacking) return;
+
+    if (!character.animations.medium_punch) return;
+
+    character.attacking = true;
+
+    this.playAnimation(character, "medium_punch");
+  }
+
+  heavyPunch(character) {
+    if (character.attacking) return;
+
+    if (!character.animations.heavy_punch) return;
+
+    character.attacking = true;
+
+    this.playAnimation(character, "heavy_punch");
   }
 
   draw(ctx) {
@@ -180,11 +253,9 @@ export default class CharacterManager {
     const bounds = this.getVisibleBounds(img);
 
     const drawWidth = bounds.width * character.scale;
-
     const drawHeight = bounds.height * character.scale;
 
     const drawX = -drawWidth / 2;
-
     const drawY = -drawHeight;
 
     ctx.save();
@@ -216,11 +287,9 @@ export default class CharacterManager {
     }
 
     const canvas = document.createElement("canvas");
-
     const ctx = canvas.getContext("2d");
 
     canvas.width = img.width;
-
     canvas.height = img.height;
 
     ctx.drawImage(img, 0, 0);
@@ -243,11 +312,8 @@ export default class CharacterManager {
 
         if (alpha > 0) {
           minX = Math.min(minX, x);
-
           minY = Math.min(minY, y);
-
           maxX = Math.max(maxX, x);
-
           maxY = Math.max(maxY, y);
         }
       }
