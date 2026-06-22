@@ -22,29 +22,37 @@ export default {
 
   boxDefinitions: {
     idle: {
-      hurtboxes: [{ x: -20, y: -110, w: 40, h: 110 }],
+      hurtboxes: [{ x: -22, y: -110, w: 44, h: 110 }],
     },
+
     walk: {
-      hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
+      hurtboxes: [{ x: -22, y: -110, w: 44, h: 110 }],
     },
+
     light_punch: {
-      hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
-      // Map hitboxes to the exact frameIndex they become active
+      // Same body/feet position as idle.
+      // Slightly wider because the shoulder/arm extends forward.
+      hurtboxes: [{ x: -22, y: -110, w: 46, h: 110 }],
+
+      // If light_punch has only ONE image, use frame index 0.
       hitboxes: {
-        1: [{ x: 15, y: -75, w: 30, h: 15 }], // Active only on frame index 1
+        0: [{ x: 30, y: -94, w: 38, h: 18 }],
       },
     },
+
     medium_punch: {
-      hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
+      hurtboxes: [{ x: -22, y: -110, w: 46, h: 110 }],
+
       hitboxes: {
-        2: [{ x: 18, y: -70, w: 35, h: 18 }],
+        1: [{ x: 30, y: -94, w: 42, h: 20 }],
       },
     },
+
     heavy_punch: {
-      hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
+      hurtboxes: [{ x: -24, y: -110, w: 50, h: 110 }],
+
       hitboxes: {
-        2: [{ x: 20, y: -65, w: 45, h: 20 }],
-        3: [{ x: 20, y: -65, w: 45, h: 20 }],
+        0: [{ x: 28, y: -96, w: 46, h: 22 }],
       },
     },
   },
