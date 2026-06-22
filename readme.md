@@ -49,12 +49,6 @@ Expect:
 | Gil Brother Away | Away Dimension |
 | Inri Cristo | Divine Judgment |
 
-## 📂 Installation
-
-1. Download the latest release.
-2. Launch `mugen.exe`.
-3. Select your fighter.
-4. Fight for the honor of Brazilian memes.
 
 ## ⚠️ Disclaimer
 
