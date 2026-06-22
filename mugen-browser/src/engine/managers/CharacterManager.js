@@ -240,7 +240,30 @@ export default class CharacterManager {
   }
 
   draw(ctx) {
-    for (const character of this.characters) {
+    // Create a copy to sort so we don't change the order of the actual array permanently
+    const sortedCharacters = [...this.characters].sort((a, b) => {
+      // Check if they are attacking
+      const aIsAttacking = [
+        "light_punch",
+        "medium_punch",
+        "heavy_punch",
+      ].includes(a.currentAnimation);
+      const bIsAttacking = [
+        "light_punch",
+        "medium_punch",
+        "heavy_punch",
+      ].includes(b.currentAnimation);
+
+      // If one is attacking and the other isn't, draw the attacker last (on top)
+      if (aIsAttacking && !bIsAttacking) return 1;
+      if (!aIsAttacking && bIsAttacking) return -1;
+
+      // Fallback: draw the one with a higher Y value (closer to bottom of screen) on top
+      return a.y - b.y;
+    });
+
+    // Now draw based on the sorted order
+    for (const character of sortedCharacters) {
       this.drawCharacter(ctx, character);
     }
   }
