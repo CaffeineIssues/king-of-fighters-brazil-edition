@@ -12,8 +12,12 @@ export default class GameContext {
     this.availableCharacters = [];
     console.log(this.availableCharacters);
     this.mode = "versus";
+
+    // --- ROUND SYSTEM STATE ---
     this.round = 1;
-    this.winner = null;
+    this.p1RoundWins = 0;
+    this.p2RoundWins = 0;
+    this.winner = null; // Will hold the final match winner
   }
 
   setStage(stage) {

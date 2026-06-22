@@ -141,6 +141,8 @@ export default class CharacterManager {
       character.frameIndex = 0;
       character.frameTimer = 0;
       character.previousAnimation = character.currentAnimation;
+
+      character.hasHitCurrentAttack = false;
     }
 
     character.frameTimer++;
@@ -148,6 +150,10 @@ export default class CharacterManager {
     let animationSpeed = 8;
 
     switch (character.currentAnimation) {
+      case "hurt":
+        animationSpeed = 6;
+        break;
+
       case "walk":
         animationSpeed = 6;
         break;
