@@ -61,6 +61,7 @@ export default class CharacterManager {
       frameTimer: 0,
 
       attacking: false,
+      crouching: false,
 
       scale: definition.scale ?? 2.5,
       walkSpeed: definition.walkSpeed ?? 3.2,
@@ -158,6 +159,10 @@ export default class CharacterManager {
         animationSpeed = 6;
         break;
 
+      case "crouch":
+        animationSpeed = 4;
+        break;
+
       case "light_punch":
         animationSpeed = 4;
         break;
@@ -186,6 +191,9 @@ export default class CharacterManager {
           character.currentAnimation = "idle";
           character.attacking = false;
           character.frameIndex = 0;
+        } else if (character.currentAnimation === "crouch") {
+          // Keep them frozen on the very last frame of the ducking animation
+          character.frameIndex = frames.length - 1;
         } else {
           character.frameIndex = 0;
         }
@@ -207,6 +215,21 @@ export default class CharacterManager {
     character.frameTimer = 0;
 
     return true;
+  }
+
+  crouch(character) {
+    if (character.attacking || character.crouching) return;
+    if (!character.animations.crouch) return;
+
+    character.crouching = true;
+    this.playAnimation(character, "crouch");
+  }
+
+  standUp(character) {
+    if (!character.crouching || character.attacking) return;
+
+    character.crouching = false;
+    this.playAnimation(character, "idle");
   }
 
   lightPunch(character) {

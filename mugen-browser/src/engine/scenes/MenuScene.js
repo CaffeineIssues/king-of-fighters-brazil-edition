@@ -7,6 +7,8 @@ export default class MenuScene {
     this.options = ["START GAME", "OPTIONS", "EXIT"];
 
     this.selected = 0;
+
+    this.game.audioSystem?.playMusic("menu");
   }
 
   async init() {

@@ -379,17 +379,28 @@ export default class FightScene {
     let p1Moving = false;
     if (
       this.p1.currentAnimation === "idle" ||
-      this.p1.currentAnimation === "walk"
+      this.p1.currentAnimation === "walk" ||
+      this.p1.currentAnimation === "crouch"
     ) {
-      if (input.isPressed?.("KeyA")) {
-        this.p1.x -= this.p1.walkSpeed;
-        this.p1.facing = -1;
-        p1Moving = true;
-      }
-      if (input.isPressed?.("KeyD")) {
-        this.p1.x += this.p1.walkSpeed;
-        this.p1.facing = 1;
-        p1Moving = true;
+      if (input.isPressed?.("KeyS")) {
+        this.characters.crouch(this.p1);
+      } else {
+        // If they release 'S', stop crouching
+        if (this.p1.crouching) {
+          this.characters.standUp(this.p1);
+        }
+
+        // Only allow walking if not crouching
+        if (input.isPressed?.("KeyA")) {
+          this.p1.x -= this.p1.walkSpeed;
+          this.p1.facing = -1;
+          p1Moving = true;
+        }
+        if (input.isPressed?.("KeyD")) {
+          this.p1.x += this.p1.walkSpeed;
+          this.p1.facing = 1;
+          p1Moving = true;
+        }
       }
       if (input.wasPressed?.("KeyJ") && this.p1.animations.light_punch) {
         this.p1.currentAnimation = "light_punch";
@@ -406,7 +417,7 @@ export default class FightScene {
         this.p1.currentAnimation = "heavy_punch";
         this.p1.frameIndex = 0;
         this.p1.frameTimer = 0;
-      } else {
+      } else if (!this.p1.crouching) {
         const targetAnim = p1Moving ? "walk" : "idle";
         if (this.p1.currentAnimation !== targetAnim) {
           this.p1.currentAnimation = targetAnim;
@@ -443,10 +454,7 @@ export default class FightScene {
         this.p2.currentAnimation = "medium_punch";
         this.p2.frameIndex = 0;
         this.p2.frameTimer = 0;
-      } else if (
-        input.wasPressed?.("Numpad3") &&
-        this.p2.animations.heavy_punch
-      ) {
+      } else if (input.wasPressed?.("KeyO") && this.p2.animations.heavy_punch) {
         this.p2.currentAnimation = "heavy_punch";
         this.p2.frameIndex = 0;
         this.p2.frameTimer = 0;
@@ -497,7 +505,7 @@ export default class FightScene {
 
     this.characters.draw(renderCtx);
     this.drawHUD(renderCtx);
-    this.drawDebugBoxes(renderCtx);
+    //this.drawDebugBoxes(renderCtx);
 
     // --- RENDER ROUND WINNER ANNOUNCEMENT ---
     if (this.roundOver) {

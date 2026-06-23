@@ -4,6 +4,9 @@ import AssetManager from "./managers/AssetManager";
 import MenuScene from "./scenes/MenuScene";
 import GameContext from "./contexts/GameContext";
 import CharacterManager from "./managers/CharacterManager";
+import AudioSystem from "./systems/AudioSystem";
+
+import menuMusic from "../assets/audio/pulo_da_gaita_8bit.wav";
 
 export default class Game {
   constructor(canvas) {
@@ -12,10 +15,7 @@ export default class Game {
     }
 
     this.canvas = canvas;
-
     this.ctx = canvas.getContext("2d");
-
-    this.gameContext = new GameContext();
 
     if (!this.ctx) {
       throw new Error("Could not get 2D context.");
@@ -23,16 +23,36 @@ export default class Game {
 
     this.ctx.imageSmoothingEnabled = false;
 
+    // -----------------------------
+    // CORE CONTEXT
+    // -----------------------------
+    this.gameContext = new GameContext();
+
+    // -----------------------------
+    // SYSTEMS / MANAGERS
+    // -----------------------------
     this.sceneManager = new SceneManager(this);
-
     this.inputSystem = new InputSystem();
-
     this.assets = new AssetManager();
-
     this.characters = new CharacterManager(this);
 
-    this.lastTime = 0;
+    // -----------------------------
+    // AUDIO SYSTEM
+    // -----------------------------
+    this.audioSystem = new AudioSystem();
 
+    this.audioSystem.registerMusic("menu", menuMusic, {
+      loop: true,
+      volume: 0.6,
+    });
+
+    // Important: unlocks audio after first key/click
+    this.audioSystem.init();
+
+    // -----------------------------
+    // GAME LOOP
+    // -----------------------------
+    this.lastTime = 0;
     this.loop = this.loop.bind(this);
   }
 
@@ -44,11 +64,9 @@ export default class Game {
 
   loop(timestamp) {
     const delta = timestamp - this.lastTime;
-
     this.lastTime = timestamp;
 
     this.sceneManager.update(delta);
-
     this.sceneManager.draw(this.ctx);
 
     this.inputSystem.update();

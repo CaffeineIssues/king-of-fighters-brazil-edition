@@ -27,6 +27,9 @@ export default {
     walk: {
       hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
     },
+    crouch: {
+      hurtboxes: [{ x: -20, y: -55, w: 45, h: 55 }],
+    },
     light_punch: {
       hurtboxes: [{ x: -20, y: -90, w: 40, h: 90 }],
       // Map hitboxes to the exact frameIndex they become active
