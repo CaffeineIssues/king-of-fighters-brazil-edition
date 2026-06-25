@@ -27,7 +27,7 @@ const portraitBigModules = import.meta.glob(
 export default class CharacterSelectScene {
   constructor(game) {
     this.game = game;
-
+    this.game.audioSystem?.stopMusic();
     this.map = new Image();
     this.map.src = brazilMap;
 
